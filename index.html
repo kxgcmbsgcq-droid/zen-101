@@ -223,13 +223,13 @@ input{font-family:inherit}
 
 /* ═══ OVERSCROLL PULL ZONE ═══ */
 .r-pull{display:flex;flex-direction:column;align-items:center;
-  padding:30px 0 20px;opacity:0;transform:translateY(10px);
-  transition:opacity .4s ease,transform .4s ease}
+  padding:60px 0 40px;opacity:0;transform:translateY(10px);
+  transition:opacity .5s ease,transform .5s ease}
 .r-pull.hint{opacity:1;transform:translateY(0)}
-.r-pull-arrow{font-size:20px;color:var(--accent);opacity:.5;
-  animation:pullBounce 1.2s ease-in-out infinite}
-.r-pull-txt{font-size:12px;color:var(--fg3);margin-top:6px;letter-spacing:.3px}
-@keyframes pullBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.r-pull-arrow{font-size:22px;color:var(--accent);opacity:.4;
+  animation:pullBounce 1.5s ease-in-out infinite}
+.r-pull-txt{font-size:12px;color:var(--fg3);margin-top:8px;letter-spacing:.3px}
+@keyframes pullBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 
 /* ═══ ENSŌ CEREMONY ═══ */
 .r-ceremony{margin-top:20px;display:flex;flex-direction:column;align-items:center;
@@ -242,10 +242,10 @@ input{font-family:inherit}
   -webkit-tap-highlight-color:transparent}
 .enso-svg{width:140px;height:140px}
 
-/* Ink brush stroke — visible, dramatic */
+/* Ink brush stroke — slow, meditative */
 .enso-path{fill:none;stroke:var(--fg);stroke-width:4;stroke-linecap:round;
   stroke-dasharray:310;stroke-dashoffset:310;opacity:0;
-  transition:stroke-dashoffset 2.8s cubic-bezier(.25,.1,.25,1),opacity .6s ease}
+  transition:stroke-dashoffset 4s cubic-bezier(.25,.1,.25,1),opacity .6s ease}
 .enso-draw .enso-path{stroke-dashoffset:0;opacity:.35}
 
 /* Gold overlay on "voorgedragen" */
@@ -299,9 +299,6 @@ input{font-family:inherit}
 .ring.pulse{animation:ringPulse .6s cubic-bezier(.32,.72,0,1)}
 @keyframes pctFlash{0%{color:var(--accent)}40%{color:var(--gold1)}100%{color:var(--accent)}}
 .ring-t.flash{animation:pctFlash .8s ease}
-
-/* ═══ READER CLOSING ═══ */
-.reader.closing{transform:translateY(100%);transition:transform .5s cubic-bezier(.32,.72,0,1)}
 
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0s!important;transition-duration:0s!important}}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -583,34 +580,37 @@ function openStory(n){
     },{threshold:0.3, root:$('reader')});
     pullObs.observe(pull);
 
-    // Trigger ceremony when pull zone is fully visible (overscrolled past content)
+    // Trigger ceremony when ceremony element becomes visible (user scrolled past pull zone)
     const cerObs=new IntersectionObserver((entries)=>{
       if(entries[0].isIntersecting&&!pullTriggered){
         pullTriggered=true;
-        pull.style.display='none';
+        pull.style.opacity='0';
         cer.classList.add('visible');
-        // Mark read after ensō draws (2.8s stroke animation)
+        // Mark read after ensō finishes drawing (4s stroke animation)
         readTimer=setTimeout(()=>{
           markRead(s.n);
-          // FLOEP: auto-close after ensō completes
-          setTimeout(()=>autoCloseReader(s.n),1200);
-        },2800);
+          // Update date display
+          const dateEl=cer.querySelector('.enso-date');
+          if(dateEl)dateEl.textContent=fmtDate(today());
+        },4000);
         cerObs.disconnect();pullObs.disconnect();
       }
-    },{threshold:0.5, root:$('reader')});
+    },{threshold:0.3, root:$('reader')});
     cerObs.observe(cer);
 
-    // Backup timer
-    const backup=setTimeout(()=>{if(!rdSet.has(s.n)){markRead(s.n);render()}},60000);
+    // Backup timer (90s)
+    const backup=setTimeout(()=>{if(!rdSet.has(s.n)){markRead(s.n);render()}},90000);
     cer._backup=backup;cer._pullObs=pullObs;cer._cerObs=cerObs;
   } else {
     $('ceremony').classList.add('visible');
   }
 }
 
+let justRead=false; // track if a story was read this session
 function closeReader(){
   if(cur){
     scrollPos[cur.n]=$('reader').scrollTop;save();
+    justRead=rdSet.has(cur.n);
     clearTimeout(readTimer);
     const cer=$('ceremony');
     if(cer?._backup)clearTimeout(cer._backup);
@@ -621,30 +621,21 @@ function closeReader(){
   document.body.style.overflow='';
   cur=null;
   render();
-}
-
-// Auto-close with FLOEP animation + progress pulse
-function autoCloseReader(storyN){
-  const reader=$('reader');
-  reader.classList.add('closing');
-  reader.addEventListener('transitionend',function once(){
-    reader.removeEventListener('transitionend',once);
-    reader.classList.remove('open','closing');
-    document.body.style.overflow='';
-    cur=null;
-    render();
-    // Pulse the progress ring to draw attention to the update
+  // Progress pulse when returning from a read story
+  if(justRead){
+    justRead=false;
     requestAnimationFrame(()=>{
-      const ring=document.querySelector('.ring');
-      const ringT=$('ringT');
-      if(ring){ring.classList.add('pulse');
-        ring.addEventListener('animationend',()=>ring.classList.remove('pulse'),{once:true})}
-      if(ringT){ringT.classList.add('flash');
-        ringT.addEventListener('animationend',()=>ringT.classList.remove('flash'),{once:true})}
-      // Smooth scroll to top so user sees the progress card
       scrollTo({top:0,behavior:'smooth'});
+      setTimeout(()=>{
+        const ring=document.querySelector('.ring');
+        const ringT=$('ringT');
+        if(ring){ring.classList.add('pulse');
+          ring.addEventListener('animationend',()=>ring.classList.remove('pulse'),{once:true})}
+        if(ringT){ringT.classList.add('flash');
+          ringT.addEventListener('animationend',()=>ringT.classList.remove('flash'),{once:true})}
+      },400);
     });
-  });
+  }
 }
 
 function randomStory(){
