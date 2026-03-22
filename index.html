@@ -270,13 +270,10 @@ input{font-family:inherit}
 .enso-date{font-size:12px;color:var(--fg2);margin-top:18px;font-variant-numeric:tabular-nums;
   opacity:0;transition:opacity .6s ease .8s;letter-spacing:.3px}
 .enso-draw .enso-date{opacity:1}
-.enso-hint{font-size:12px;color:var(--fg3);margin-top:8px;opacity:0;
-  transition:opacity .6s ease 2s;font-style:italic;letter-spacing:.2px}
-.enso-draw .enso-hint{opacity:.7}
-.enso-used .enso-hint{opacity:0!important;transition:opacity .2s}
-.enso-used-label{font-size:12px;font-weight:600;color:var(--gold2);margin-top:8px;
-  opacity:0;transition:opacity .6s ease .5s;letter-spacing:.3px}
-.enso-used .enso-used-label{opacity:1}
+.enso-status{font-size:12px;color:var(--fg3);margin-top:8px;opacity:0;
+  transition:opacity .6s ease 4.2s;font-style:italic;letter-spacing:.2px}
+.enso-draw .enso-status{opacity:.7}
+.enso-used .enso-status{color:var(--gold2);font-weight:600;font-style:normal;opacity:1;transition:opacity .6s ease .5s}
 
 /* ═══ SCROLL TOP ═══ */
 .totop{position:fixed;bottom:calc(20px + var(--sb));right:20px;z-index:50;
@@ -544,15 +541,11 @@ function openStory(n){
         <div class="enso-ripple"></div>
       </div>
       <div class="enso-date">${isRead?fmtDate(dt.read):''}</div>
-      <div class="enso-hint">${isUsed?'':'tik voor voorgedragen'}</div>
-      <div class="enso-used-label">${isUsed?'Voorgedragen · '+fmtDate(dt.used):''}</div>
+      <div class="enso-status">${isUsed?'Voorgedragen · '+fmtDate(dt.used):isRead?'Gelezen':'…'}</div>
     </div>`;
 
   // Peek toggle
   $('peekBtn').onclick=()=>{$('peek').classList.toggle('is-open');$('peekBtn').classList.toggle('is-open')};
-
-  // Ensō tap → mark as used
-  $('ensoTap').onclick=()=>{if(rdSet.has(s.n))markUsed(s.n)};
 
   // Open reader
   $('reader').classList.add('open');
@@ -644,8 +637,25 @@ function randomStory(){
   openStory(pool[Math.floor(Math.random()*pool.length)].n);
 }
 
-// Events
-$('list').addEventListener('click',e=>{const c=e.target.closest('.card');if(c)openStory(+c.dataset.n)});
+// Events — tap opens, long-press toggles "voorgedragen"
+let lpTimer=0,lpFired=false;
+$('list').addEventListener('touchstart',e=>{
+  const c=e.target.closest('.card');if(!c)return;
+  lpFired=false;
+  lpTimer=setTimeout(()=>{
+    lpFired=true;
+    const n=+c.dataset.n;
+    if(!rdSet.has(n))return; // only read stories can be voorgedragen
+    if(usSet.has(n)){usSet.delete(n);if(dates[n])delete dates[n].used}
+    else{markUsed(n)}
+    save();render();
+    // Haptic feedback if available
+    if(navigator.vibrate)navigator.vibrate(30);
+  },500);
+},{passive:true});
+$('list').addEventListener('touchend',()=>{clearTimeout(lpTimer)},{passive:true});
+$('list').addEventListener('touchmove',()=>{clearTimeout(lpTimer)},{passive:true});
+$('list').addEventListener('click',e=>{if(lpFired){lpFired=false;return}const c=e.target.closest('.card');if(c)openStory(+c.dataset.n)});
 $('rBack').addEventListener('click',closeReader);
 // prev/next arrows removed
 $('rBm').addEventListener('click',()=>{if(!cur)return;bmSet.has(cur.n)?bmSet.delete(cur.n):bmSet.add(cur.n);
