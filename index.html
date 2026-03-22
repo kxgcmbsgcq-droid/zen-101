@@ -221,8 +221,18 @@ input{font-family:inherit}
   max-height:0;overflow:hidden;transition:max-height .6s cubic-bezier(.32,.72,0,1),opacity .4s;opacity:0}
 .r-peek.is-open .r-peek-text{max-height:8000px;opacity:1}
 
+/* ═══ OVERSCROLL PULL ZONE ═══ */
+.r-pull{display:flex;flex-direction:column;align-items:center;
+  padding:30px 0 20px;opacity:0;transform:translateY(10px);
+  transition:opacity .4s ease,transform .4s ease}
+.r-pull.hint{opacity:1;transform:translateY(0)}
+.r-pull-arrow{font-size:20px;color:var(--accent);opacity:.5;
+  animation:pullBounce 1.2s ease-in-out infinite}
+.r-pull-txt{font-size:12px;color:var(--fg3);margin-top:6px;letter-spacing:.3px}
+@keyframes pullBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
 /* ═══ ENSŌ CEREMONY ═══ */
-.r-ceremony{margin-top:48px;display:flex;flex-direction:column;align-items:center;
+.r-ceremony{margin-top:20px;display:flex;flex-direction:column;align-items:center;
   padding:40px 0 60px;min-height:280px;
   opacity:0;transform:translateY(20px);
   transition:opacity 1s ease,transform 1s cubic-bezier(.32,.72,0,1)}
@@ -284,6 +294,15 @@ input{font-family:inherit}
 .card:nth-child(3){animation-delay:.04s}.card:nth-child(4){animation-delay:.06s}
 .card:nth-child(5){animation-delay:.08s}.card:nth-child(6){animation-delay:.1s}
 .card:nth-child(n+7){animation-delay:.12s}
+/* ═══ PROGRESS PULSE ═══ */
+@keyframes ringPulse{0%{transform:scale(1)}30%{transform:scale(1.15)}60%{transform:scale(.95)}100%{transform:scale(1)}}
+.ring.pulse{animation:ringPulse .6s cubic-bezier(.32,.72,0,1)}
+@keyframes pctFlash{0%{color:var(--accent)}40%{color:var(--gold1)}100%{color:var(--accent)}}
+.ring-t.flash{animation:pctFlash .8s ease}
+
+/* ═══ READER CLOSING ═══ */
+.reader.closing{transform:translateY(100%);transition:transform .5s cubic-bezier(.32,.72,0,1)}
+
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0s!important;transition-duration:0s!important}}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 </style>
@@ -514,6 +533,10 @@ function openStory(n){
       <div class="r-peek-label">${isNL?'ENGLISH':'NEDERLANDS'}</div>
       <div class="r-peek-text">${t2h(altText)}</div>
     </div>
+    ${!isRead?`<div class="r-pull" id="pullZone">
+      <div class="r-pull-arrow">↑</div>
+      <div class="r-pull-txt">Scroll verder om te voltooien</div>
+    </div>`:''}
     <div class="r-ceremony${isRead?' enso-draw visible':''}${isUsed?' enso-used':''}" id="ceremony">
       <div class="enso-wrap" id="ensoTap">
         <svg class="enso-svg" viewBox="0 0 140 140">
@@ -546,23 +569,40 @@ function openStory(n){
     $('reader').scrollTop=0;
   }
 
-  // Scroll-based read detection via IntersectionObserver
+  // Overscroll-to-complete flow
   if(!isRead){
+    const pull=$('pullZone');
     const cer=$('ceremony');
-    const obs=new IntersectionObserver((entries)=>{
-      if(entries[0].isIntersecting){
-        cer.classList.add('visible');
-        // Start 3 second countdown once ceremony is visible
-        readTimer=setTimeout(()=>{markRead(s.n);render()},3000);
-        obs.disconnect();
-      }
-    },{threshold:0.2, root:$('reader')});
-    obs.observe(cer);
+    let pullTriggered=false;
 
-    // Also: 45 sec backup timer
-    const backup=setTimeout(()=>{if(!rdSet.has(s.n)){markRead(s.n);render()}},45000);
-    // Store for cleanup
-    cer._backup=backup;cer._obs=obs;
+    // Show pull hint when near bottom
+    const pullObs=new IntersectionObserver((entries)=>{
+      if(entries[0].isIntersecting&&!pullTriggered){
+        pull.classList.add('hint');
+      }
+    },{threshold:0.3, root:$('reader')});
+    pullObs.observe(pull);
+
+    // Trigger ceremony when pull zone is fully visible (overscrolled past content)
+    const cerObs=new IntersectionObserver((entries)=>{
+      if(entries[0].isIntersecting&&!pullTriggered){
+        pullTriggered=true;
+        pull.style.display='none';
+        cer.classList.add('visible');
+        // Mark read after ensō draws (2.8s stroke animation)
+        readTimer=setTimeout(()=>{
+          markRead(s.n);
+          // FLOEP: auto-close after ensō completes
+          setTimeout(()=>autoCloseReader(s.n),1200);
+        },2800);
+        cerObs.disconnect();pullObs.disconnect();
+      }
+    },{threshold:0.5, root:$('reader')});
+    cerObs.observe(cer);
+
+    // Backup timer
+    const backup=setTimeout(()=>{if(!rdSet.has(s.n)){markRead(s.n);render()}},60000);
+    cer._backup=backup;cer._pullObs=pullObs;cer._cerObs=cerObs;
   } else {
     $('ceremony').classList.add('visible');
   }
@@ -574,12 +614,37 @@ function closeReader(){
     clearTimeout(readTimer);
     const cer=$('ceremony');
     if(cer?._backup)clearTimeout(cer._backup);
-    if(cer?._obs)cer._obs.disconnect();
+    if(cer?._pullObs)cer._pullObs.disconnect();
+    if(cer?._cerObs)cer._cerObs.disconnect();
   }
   $('reader').classList.remove('open');
   document.body.style.overflow='';
   cur=null;
   render();
+}
+
+// Auto-close with FLOEP animation + progress pulse
+function autoCloseReader(storyN){
+  const reader=$('reader');
+  reader.classList.add('closing');
+  reader.addEventListener('transitionend',function once(){
+    reader.removeEventListener('transitionend',once);
+    reader.classList.remove('open','closing');
+    document.body.style.overflow='';
+    cur=null;
+    render();
+    // Pulse the progress ring to draw attention to the update
+    requestAnimationFrame(()=>{
+      const ring=document.querySelector('.ring');
+      const ringT=$('ringT');
+      if(ring){ring.classList.add('pulse');
+        ring.addEventListener('animationend',()=>ring.classList.remove('pulse'),{once:true})}
+      if(ringT){ringT.classList.add('flash');
+        ringT.addEventListener('animationend',()=>ringT.classList.remove('flash'),{once:true})}
+      // Smooth scroll to top so user sees the progress card
+      scrollTo({top:0,behavior:'smooth'});
+    });
+  });
 }
 
 function randomStory(){
