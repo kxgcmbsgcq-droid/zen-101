@@ -212,21 +212,33 @@ input{font-family:inherit}
   transition:opacity .8s ease;display:flex;align-items:center;justify-content:center;
   flex-direction:column;gap:20px}
 .sumi-overlay.active{opacity:1;pointer-events:auto}
+.sumi-overlay.reversing{opacity:0;transition:opacity .6s ease}
 .sumi-bg{position:absolute;inset:0;background:rgba(0,0,0,.85);
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
-.sumi-svg{position:relative;z-index:1;width:80vw;max-width:360px;height:auto}
-.sumi-stroke{fill:none;stroke:var(--fg);stroke-linecap:round;opacity:0}
-.sumi-stroke.draw{opacity:.6;transition:stroke-dashoffset 3s cubic-bezier(.25,.1,.25,1),opacity .5s ease}
+.sumi-svg{position:relative;z-index:1;width:85vw;max-width:380px;height:auto}
+/* Ink strokes — authentic sumi-e feel */
+.sumi-stroke{fill:none;stroke:var(--fg);stroke-linecap:round;opacity:0;
+  transition:stroke-dashoffset 0s,opacity 0s}
+.sumi-stroke.draw{opacity:.55;transition:stroke-dashoffset var(--dur,2s) cubic-bezier(.15,.1,.25,1),opacity .3s ease}
+.sumi-stroke.reverse{transition:stroke-dashoffset .4s ease-in,opacity .3s ease .3s!important;opacity:0}
+/* Leaf strokes — faster, flicking motion */
+.sumi-leaf{fill:none;stroke:var(--fg);stroke-linecap:round;opacity:0;
+  transition:stroke-dashoffset 0s,opacity 0s}
+.sumi-leaf.draw{opacity:.45;transition:stroke-dashoffset var(--dur,.6s) cubic-bezier(0,.2,.3,1),opacity .2s ease}
+.sumi-leaf.reverse{transition:stroke-dashoffset .3s ease-in,opacity .2s ease .2s!important;opacity:0}
+/* Gold shimmer overlay */
 .sumi-gold{fill:none;stroke:url(#ensoGold);stroke-linecap:round;opacity:0;
-  stroke-dashoffset:var(--len)}
-.sumi-gold.draw{opacity:.8;transition:stroke-dashoffset 2s cubic-bezier(.32,.72,0,1) .8s,opacity .5s ease .8s}
+  transition:stroke-dashoffset 0s,opacity 0s}
+.sumi-gold.draw{opacity:.7;transition:stroke-dashoffset 2s cubic-bezier(.32,.72,0,1),opacity .5s ease}
+.sumi-gold.reverse{transition:stroke-dashoffset .3s ease-in,opacity .2s ease!important;opacity:0}
+/* Labels */
 .sumi-label{position:relative;z-index:1;font-family:var(--serif);font-size:18px;
   color:var(--gold1);opacity:0;transform:translateY(10px);
-  transition:opacity .8s ease 3.5s,transform .8s ease 3.5s;letter-spacing:.5px}
-.sumi-overlay.active .sumi-label{opacity:1;transform:translateY(0)}
+  transition:opacity .8s ease,transform .8s ease;letter-spacing:.5px}
+.sumi-overlay.active .sumi-label.show{opacity:1;transform:translateY(0)}
 .sumi-date{position:relative;z-index:1;font-size:12px;color:var(--fg2);opacity:0;
-  transition:opacity .6s ease 4s;letter-spacing:.3px}
-.sumi-overlay.active .sumi-date{opacity:.7}
+  transition:opacity .6s ease;letter-spacing:.3px}
+.sumi-overlay.active .sumi-date.show{opacity:.7}
 /* Sparkle particles */
 .sparkle-canvas{position:absolute;inset:0;z-index:2;pointer-events:none}
 
@@ -345,55 +357,69 @@ input{font-family:inherit}
 <div class="sumi-overlay" id="sumiOverlay">
   <div class="sumi-bg"></div>
   <canvas class="sparkle-canvas" id="sparkleCanvas"></canvas>
-  <svg class="sumi-svg" viewBox="0 0 360 480" fill="none">
-    <!-- Bamboo stalk 1 (main) -->
-    <path class="sumi-stroke" id="stalk1" stroke-width="4"
-      d="M120 470 L120 380 L118 300 L120 220 L119 140 L120 60 L121 20"
-      style="--len:450" stroke-dasharray="450" stroke-dashoffset="450"/>
-    <!-- Bamboo stalk 2 -->
-    <path class="sumi-stroke" id="stalk2" stroke-width="3"
-      d="M200 470 L201 400 L199 320 L200 240 L201 160 L200 100"
-      style="--len:370" stroke-dasharray="370" stroke-dashoffset="370"/>
-    <!-- Bamboo stalk 3 (thin) -->
-    <path class="sumi-stroke" id="stalk3" stroke-width="2.5"
-      d="M280 470 L279 410 L280 340 L281 270 L280 210"
-      style="--len:260" stroke-dasharray="260" stroke-dashoffset="260"/>
-    <!-- Nodes (horizontal dashes) -->
-    <path class="sumi-stroke" id="node1" stroke-width="3"
-      d="M112 300 L128 300" style="--len:16" stroke-dasharray="16" stroke-dashoffset="16"/>
-    <path class="sumi-stroke" id="node2" stroke-width="3"
-      d="M112 220 L128 220" style="--len:16" stroke-dasharray="16" stroke-dashoffset="16"/>
-    <path class="sumi-stroke" id="node3" stroke-width="2.5"
-      d="M193 320 L207 320" style="--len:14" stroke-dasharray="14" stroke-dashoffset="14"/>
-    <!-- Leaves -->
-    <path class="sumi-stroke" id="leaf1" stroke-width="2"
-      d="M120 140 C100 130 60 115 30 125 C55 110 95 115 120 140"
-      style="--len:180" stroke-dasharray="180" stroke-dashoffset="180"/>
-    <path class="sumi-stroke" id="leaf2" stroke-width="2"
-      d="M120 140 C140 125 170 105 200 110 C175 100 145 115 120 140"
-      style="--len:160" stroke-dasharray="160" stroke-dashoffset="160"/>
-    <path class="sumi-stroke" id="leaf3" stroke-width="1.8"
-      d="M200 240 C180 225 150 210 125 218 C150 205 180 215 200 240"
-      style="--len:150" stroke-dasharray="150" stroke-dashoffset="150"/>
-    <path class="sumi-stroke" id="leaf4" stroke-width="1.8"
-      d="M200 240 C225 228 260 215 290 222 C265 210 230 220 200 240"
-      style="--len:160" stroke-dasharray="160" stroke-dashoffset="160"/>
-    <path class="sumi-stroke" id="leaf5" stroke-width="1.5"
-      d="M280 270 C260 258 235 248 215 255 C235 243 260 250 280 270"
-      style="--len:130" stroke-dasharray="130" stroke-dashoffset="130"/>
-    <path class="sumi-stroke" id="leaf6" stroke-width="1.5"
-      d="M120 60 C100 48 70 35 45 42 C68 30 98 40 120 60"
-      style="--len:150" stroke-dasharray="150" stroke-dashoffset="150"/>
-    <!-- Gold overlay strokes (same paths, drawn second) -->
-    <path class="sumi-gold" id="gstalk1" stroke-width="3"
-      d="M120 470 L120 380 L118 300 L120 220 L119 140 L120 60 L121 20"
-      style="--len:450" stroke-dasharray="450" stroke-dashoffset="450"/>
-    <path class="sumi-gold" id="gleaf1" stroke-width="1.5"
-      d="M120 140 C100 130 60 115 30 125 C55 110 95 115 120 140"
-      style="--len:180" stroke-dasharray="180" stroke-dashoffset="180"/>
-    <path class="sumi-gold" id="gleaf2" stroke-width="1.5"
-      d="M120 140 C140 125 170 105 200 110 C175 100 145 115 120 140"
-      style="--len:160" stroke-dasharray="160" stroke-dashoffset="160"/>
+  <svg class="sumi-svg" viewBox="0 0 380 520" fill="none">
+    <!-- === STALKS — confident upward strokes, slight wobble === -->
+    <!-- Stalk 1 (main, thick) — pfft! one bold stroke bottom to top -->
+    <path class="sumi-stroke" data-g="stalk" stroke-width="5.5"
+      d="M125 500 C124 460 126 420 123 380 C121 340 125 300 124 260 C123 220 126 180 124 140 C123 100 125 60 126 25"
+      style="--len:480;--dur:2.2s" stroke-dasharray="480" stroke-dashoffset="480"/>
+    <!-- Stalk 1 ink-load shadow (thicker, faint — wet brush base) -->
+    <path class="sumi-stroke" data-g="stalk" stroke-width="9" style="--len:480;--dur:2.2s;opacity:0"
+      d="M125 500 C124 460 126 420 123 380 C121 340 125 300 124 260 C123 220 126 180 124 140 C123 100 125 60 126 25"
+      stroke-dasharray="480" stroke-dashoffset="480"/>
+    <!-- Stalk 2 (medium) — pft! -->
+    <path class="sumi-stroke" data-g="stalk" stroke-width="4"
+      d="M215 500 C216 465 214 425 215 385 C216 345 214 305 215 265 C216 225 215 185 216 145 C215 120 216 95 215 80"
+      style="--len:425;--dur:1.8s" stroke-dasharray="425" stroke-dashoffset="425"/>
+    <!-- Stalk 3 (thin, young shoot) — pf! -->
+    <path class="sumi-stroke" data-g="stalk" stroke-width="2.8"
+      d="M295 500 C294 470 296 435 295 400 C294 365 295 330 296 295 C295 265 296 240 295 215"
+      style="--len:290;--dur:1.4s" stroke-dasharray="290" stroke-dashoffset="290"/>
+    <!-- === NODES — quick horizontal dabs at joints === -->
+    <path class="sumi-stroke" data-g="node" stroke-width="4.5"
+      d="M113 380 C118 379 132 381 137 380" style="--len:24;--dur:.15s" stroke-dasharray="24" stroke-dashoffset="24"/>
+    <path class="sumi-stroke" data-g="node" stroke-width="4"
+      d="M114 260 C119 259 131 261 136 260" style="--len:22;--dur:.15s" stroke-dasharray="22" stroke-dashoffset="22"/>
+    <path class="sumi-stroke" data-g="node" stroke-width="3.5"
+      d="M115 140 C119 139 131 141 135 140" style="--len:20;--dur:.15s" stroke-dasharray="20" stroke-dashoffset="20"/>
+    <path class="sumi-stroke" data-g="node" stroke-width="3.5"
+      d="M206 385 C210 384 220 386 224 385" style="--len:18;--dur:.12s" stroke-dasharray="18" stroke-dashoffset="18"/>
+    <path class="sumi-stroke" data-g="node" stroke-width="3"
+      d="M207 265 C211 264 219 266 223 265" style="--len:16;--dur:.12s" stroke-dasharray="16" stroke-dashoffset="16"/>
+    <!-- === LEAVES — fast flicking strokes! pfft pft pft === -->
+    <!-- Leaf cluster from stalk 1, node at 140 -->
+    <path class="sumi-leaf" data-g="leaf" stroke-width="3.5"
+      d="M124 140 C108 128 78 108 42 115" style="--len:90;--dur:.35s" stroke-dasharray="90" stroke-dashoffset="90"/>
+    <path class="sumi-leaf" data-g="leaf" stroke-width="2.5"
+      d="M124 140 C112 125 88 100 55 92" style="--len:85;--dur:.3s" stroke-dasharray="85" stroke-dashoffset="85"/>
+    <path class="sumi-leaf" data-g="leaf" stroke-width="3"
+      d="M126 140 C142 126 172 108 210 112" style="--len:90;--dur:.35s" stroke-dasharray="90" stroke-dashoffset="90"/>
+    <!-- Leaf cluster from stalk 1, node at 260 -->
+    <path class="sumi-leaf" data-g="leaf" stroke-width="3"
+      d="M124 260 C110 248 82 232 48 238" style="--len:82;--dur:.3s" stroke-dasharray="82" stroke-dashoffset="82"/>
+    <path class="sumi-leaf" data-g="leaf" stroke-width="2.8"
+      d="M126 260 C144 250 176 238 212 244" style="--len:90;--dur:.35s" stroke-dasharray="90" stroke-dashoffset="90"/>
+    <!-- Leaf from stalk 2 -->
+    <path class="sumi-leaf" data-g="leaf" stroke-width="2.8"
+      d="M215 265 C200 252 172 240 140 246" style="--len:80;--dur:.3s" stroke-dasharray="80" stroke-dashoffset="80"/>
+    <path class="sumi-leaf" data-g="leaf" stroke-width="2.5"
+      d="M216 265 C234 254 264 242 300 248" style="--len:88;--dur:.35s" stroke-dasharray="88" stroke-dashoffset="88"/>
+    <!-- Small leaf from stalk 3 -->
+    <path class="sumi-leaf" data-g="leaf" stroke-width="2.2"
+      d="M295 295 C280 284 256 274 228 280" style="--len:72;--dur:.28s" stroke-dasharray="72" stroke-dashoffset="72"/>
+    <!-- Top leaves from stalk 1 — reaching upward -->
+    <path class="sumi-leaf" data-g="leaf" stroke-width="2.8"
+      d="M125 60 C110 46 82 28 50 35" style="--len:82;--dur:.3s" stroke-dasharray="82" stroke-dashoffset="82"/>
+    <path class="sumi-leaf" data-g="leaf" stroke-width="2.2"
+      d="M126 55 C138 40 158 22 185 28" style="--len:68;--dur:.25s" stroke-dasharray="68" stroke-dashoffset="68"/>
+    <!-- === GOLD SHIMMER — traces the main stalk + select leaves === -->
+    <path class="sumi-gold" data-g="gold" stroke-width="3"
+      d="M125 500 C124 460 126 420 123 380 C121 340 125 300 124 260 C123 220 126 180 124 140 C123 100 125 60 126 25"
+      style="--len:480" stroke-dasharray="480" stroke-dashoffset="480"/>
+    <path class="sumi-gold" data-g="gold" stroke-width="2"
+      d="M124 140 C108 128 78 108 42 115" style="--len:90" stroke-dasharray="90" stroke-dashoffset="90"/>
+    <path class="sumi-gold" data-g="gold" stroke-width="2"
+      d="M126 140 C142 126 172 108 210 112" style="--len:90" stroke-dasharray="90" stroke-dashoffset="90"/>
   </svg>
   <div class="sumi-label" id="sumiLabel">Voorgedragen</div>
   <div class="sumi-date" id="sumiDate"></div>
@@ -592,14 +618,13 @@ function closeReader(){
 let osTouchY=0,osAtBottom=false,osTriggered=false,osHandlers={};
 function isAtBottom(el){return el.scrollTop+el.clientHeight>=el.scrollHeight-5}
 function setupOverscroll(story){
-  if(rdSet.has(story.n)&&usSet.has(story.n))return; // already done
+  if(rdSet.has(story.n)&&usSet.has(story.n))return;
   osTriggered=false;
   const rdr=$('reader');
   const onTouchStart=e=>{osTouchY=e.touches[0].clientY;osAtBottom=isAtBottom(rdr)};
   const onTouchMove=e=>{
     if(osTriggered)return;
     if(!osAtBottom){osAtBottom=isAtBottom(rdr);osTouchY=e.touches[0].clientY;return}
-    // Still at bottom? Check continued downward pull
     if(!isAtBottom(rdr)){osAtBottom=false;return}
     const pull=osTouchY-e.touches[0].clientY;
     if(pull>80){osTriggered=true;triggerSumiE(story)}
@@ -617,52 +642,153 @@ function teardownOverscroll(){
 }
 
 // ═══ SUMI-E BAMBOO CEREMONY ═══
-function triggerSumiE(story){
-  const overlay=$('sumiOverlay');
-  overlay.classList.add('active');
-  // Haptic
-  if(navigator.vibrate)navigator.vibrate([15,50,15]);
+let sumiStory=null,sumiTimers=[],sumiConfirmed=false,sumiReversing=false;
 
-  // Animate strokes with staggered delays
-  const strokes=[
-    ['stalk1',0],['stalk2',400],['stalk3',700],
-    ['node1',1200],['node2',1400],['node3',1500],
-    ['leaf1',1800],['leaf2',2000],['leaf3',2200],
-    ['leaf4',2400],['leaf5',2600],['leaf6',2800],
-    ['gstalk1',3200],['gleaf1',3500],['gleaf2',3700]
-  ];
-  strokes.forEach(([id,delay])=>{
-    setTimeout(()=>{
-      const el=document.getElementById(id);
-      if(el){el.style.strokeDashoffset='0';el.classList.add('draw')}
-    },delay);
+function triggerSumiE(story){
+  sumiStory=story;sumiConfirmed=false;sumiReversing=false;
+  sumiTimers.forEach(clearTimeout);sumiTimers=[];
+
+  const overlay=$('sumiOverlay');
+  overlay.classList.remove('reversing');
+  overlay.classList.add('active');
+  if(navigator.vibrate)navigator.vibrate([10,40,10]);
+
+  // Reset all strokes first
+  document.querySelectorAll('.sumi-stroke,.sumi-leaf,.sumi-gold').forEach(el=>{
+    el.classList.remove('draw','reverse');
+    el.style.strokeDashoffset=el.getAttribute('stroke-dashoffset');
   });
 
-  // Sparkle particles
-  startSparkles();
+  // === PFFT PFT PFT — staggered brush strokes ===
+  const stalks=document.querySelectorAll('.sumi-stroke[data-g="stalk"]');
+  const nodes=document.querySelectorAll('.sumi-stroke[data-g="node"]');
+  const leaves=document.querySelectorAll('.sumi-leaf[data-g="leaf"]');
+  const golds=document.querySelectorAll('.sumi-gold[data-g="gold"]');
 
-  // Mark as read + used (voorgedragen)
-  markRead(story.n);
-  markUsed(story.n);
+  let t=0;
+  // Stalks — bold confident strokes
+  stalks.forEach((el,i)=>{
+    const d=t;sumiTimers.push(setTimeout(()=>{el.style.strokeDashoffset='0';el.classList.add('draw')},d));
+    t+=i===0?500:400; // second ink shadow stroke comes with first
+  });
+  // Nodes — quick dabs
+  t+=200;
+  nodes.forEach((el)=>{
+    const d=t;sumiTimers.push(setTimeout(()=>{el.style.strokeDashoffset='0';el.classList.add('draw')},d));
+    t+=120;
+  });
+  // Leaves — pfft pft pft! Fast flicks in bursts
+  t+=300;
+  leaves.forEach((el,i)=>{
+    const d=t;sumiTimers.push(setTimeout(()=>{
+      el.style.strokeDashoffset='0';el.classList.add('draw');
+      if(navigator.vibrate&&i%2===0)navigator.vibrate(5); // tiny tick per leaf burst
+    },d));
+    // Pairs come fast (100ms), gaps between clusters (250ms)
+    t+=(i%2===0)?100:280;
+  });
+  // Gold shimmer — after ink dries
+  t+=600;
+  golds.forEach((el)=>{
+    const d=t;sumiTimers.push(setTimeout(()=>{el.style.strokeDashoffset='0';el.classList.add('draw')},d));
+    t+=300;
+  });
+  // Labels
+  t+=400;
+  sumiTimers.push(setTimeout(()=>{
+    $('sumiLabel').classList.add('show');
+    $('sumiDate').classList.add('show');
+  },t));
+
+  // Start sparkles
+  startSparkles();
 
   // Labels
   $('sumiLabel').textContent='Voorgedragen';
   $('sumiDate').textContent=fmtDate(today());
+  $('sumiLabel').classList.remove('show');
+  $('sumiDate').classList.remove('show');
 
-  // Auto-dismiss after 5.5s
-  setTimeout(()=>dismissSumiE(),5500);
+  // Confirm after full animation (mark read+used only now)
+  const confirmTime=t+800;
+  sumiTimers.push(setTimeout(()=>{
+    if(!sumiReversing){
+      sumiConfirmed=true;
+      markRead(story.n);markUsed(story.n);
+    }
+  },confirmTime));
+
+  // Auto-dismiss after enjoying the art
+  sumiTimers.push(setTimeout(()=>{if(!sumiReversing)dismissSumiE()},confirmTime+2000));
+
+  // Listen for reverse-scroll (scroll up = cancel)
+  setupSumiReverse();
 }
+
+function setupSumiReverse(){
+  let ry=0;
+  const onTs=e=>{ry=e.touches[0].clientY};
+  const onTm=e=>{
+    if(sumiConfirmed||sumiReversing)return;
+    const dy=e.touches[0].clientY-ry;
+    if(dy>60){// scrolling up — user wants to cancel!
+      sumiReversing=true;
+      reverseSumiE();
+    }
+  };
+  const overlay=$('sumiOverlay');
+  overlay.addEventListener('touchstart',onTs,{passive:true});
+  overlay.addEventListener('touchmove',onTm,{passive:true});
+  // Store for cleanup
+  overlay._rTs=onTs;overlay._rTm=onTm;
+}
+
+function reverseSumiE(){
+  sumiTimers.forEach(clearTimeout);sumiTimers=[];
+  stopSparkles();
+  if(navigator.vibrate)navigator.vibrate([5,20,5]);
+
+  // Reverse all strokes — fast retract
+  document.querySelectorAll('.sumi-stroke,.sumi-leaf,.sumi-gold').forEach(el=>{
+    el.classList.add('reverse');
+    el.style.strokeDashoffset=el.getAttribute('stroke-dashoffset');
+  });
+  $('sumiLabel').classList.remove('show');
+  $('sumiDate').classList.remove('show');
+
+  // Fade out overlay
+  const overlay=$('sumiOverlay');
+  setTimeout(()=>{
+    overlay.classList.add('reversing');
+    setTimeout(()=>{
+      overlay.classList.remove('active','reversing');
+      cleanupSumiReverse();
+      // Reset overscroll so they can trigger again
+      osTriggered=false;
+    },600);
+  },400);
+}
+
 function dismissSumiE(){
+  sumiTimers.forEach(clearTimeout);sumiTimers=[];
   stopSparkles();
   const overlay=$('sumiOverlay');
+  cleanupSumiReverse();
   overlay.classList.remove('active');
-  // Reset all strokes
-  document.querySelectorAll('.sumi-stroke,.sumi-gold').forEach(el=>{
-    el.classList.remove('draw');
-    el.style.strokeDashoffset=el.style.getPropertyValue('--len');
+  // Reset strokes
+  document.querySelectorAll('.sumi-stroke,.sumi-leaf,.sumi-gold').forEach(el=>{
+    el.classList.remove('draw','reverse');
+    el.style.strokeDashoffset=el.getAttribute('stroke-dashoffset');
   });
-  // Close reader and go back
+  $('sumiLabel').classList.remove('show');
+  $('sumiDate').classList.remove('show');
   closeReader();
+}
+
+function cleanupSumiReverse(){
+  const o=$('sumiOverlay');
+  if(o._rTs){o.removeEventListener('touchstart',o._rTs);delete o._rTs}
+  if(o._rTm){o.removeEventListener('touchmove',o._rTm);delete o._rTm}
 }
 
 // ═══ SPARKLE PARTICLES ═══
@@ -675,35 +801,34 @@ function startSparkles(){
   ctx.scale(2,2);
   const W=window.innerWidth,H=window.innerHeight;
   const particles=[];
-  const colors=['#F0DEB8','#C9A96E','#E8D5B0','#fff'];
-  for(let i=0;i<60;i++){
+  const colors=['#F0DEB8','#C9A96E','#E8D5B0','#fff','#D4B896'];
+  for(let i=0;i<80;i++){
     particles.push({
-      x:Math.random()*W,y:H+Math.random()*100,
-      vx:(Math.random()-.5)*.5,vy:-(1+Math.random()*2),
-      size:1+Math.random()*2.5,
+      x:Math.random()*W,y:H+Math.random()*200,
+      vx:(Math.random()-.5)*.6,vy:-(1+Math.random()*2.5),
+      size:.8+Math.random()*2.5,
       color:colors[Math.floor(Math.random()*colors.length)],
-      alpha:0,fadeIn:Math.random()*.02+.01,
-      life:0,maxLife:120+Math.random()*180,
-      twinkle:Math.random()*Math.PI*2
+      alpha:0,life:0,maxLife:150+Math.random()*200,
+      twinkle:Math.random()*Math.PI*2,
+      drift:Math.random()*Math.PI*2
     });
   }
   function frame(){
     ctx.clearRect(0,0,W,H);
     particles.forEach(p=>{
-      p.x+=p.vx+Math.sin(p.life*.02)*.3;
+      p.x+=p.vx+Math.sin(p.drift+p.life*.015)*.4;
       p.y+=p.vy;
       p.life++;
-      if(p.life<30)p.alpha=Math.min(1,p.alpha+p.fadeIn*3);
-      else if(p.life>p.maxLife-40)p.alpha=Math.max(0,p.alpha-.025);
-      p.twinkle+=.08;
-      const tw=.5+.5*Math.sin(p.twinkle);
+      if(p.life<40)p.alpha=Math.min(.9,p.life/40);
+      else if(p.life>p.maxLife-50)p.alpha=Math.max(0,p.alpha-.02);
+      p.twinkle+=.1;
+      const tw=.4+.6*Math.sin(p.twinkle);
       ctx.globalAlpha=p.alpha*tw;
       ctx.fillStyle=p.color;
       ctx.beginPath();
       ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
       ctx.fill();
-      // Reset dead particles
-      if(p.life>p.maxLife){p.y=H+20;p.x=Math.random()*W;p.life=0;p.alpha=0}
+      if(p.life>p.maxLife){p.y=H+30;p.x=Math.random()*W;p.life=0;p.alpha=0}
     });
     sparkleAnim=requestAnimationFrame(frame);
   }
@@ -757,8 +882,11 @@ document.addEventListener('keydown',e=>{if($('reader').classList.contains('open'
   if(e.key==='ArrowLeft'&&cur?.n>1)openStory(cur.n-1);
   if(e.key==='ArrowRight'&&cur?.n<101)openStory(cur.n+1)}});
 
-// Tap overlay to dismiss early
-$('sumiOverlay').addEventListener('click',dismissSumiE);
+// Tap overlay to dismiss (only after confirmed, otherwise reverse)
+$('sumiOverlay').addEventListener('click',()=>{
+  if(sumiConfirmed)dismissSumiE();
+  else if(!sumiReversing)reverseSumiE();
+});
 
 // Init
 updLang();render();
