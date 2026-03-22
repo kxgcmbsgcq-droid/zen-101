@@ -421,125 +421,177 @@ input{font-family:inherit}
     <path class="sumi-stroke" data-g="node" fill="var(--fg)"
       d="M278 334 Q291 329 304 334 Q291 338 278 334 Z" style="--dur:.08s;--ink:.66"/>
 
-    <!-- ═══ BRANCHES — soeff soeff, thin whip from nodes ═══ -->
+    <!-- ═══ BRANCHES — soeff soeff, tapered whips from nodes ═══ -->
+    <!-- Each branch: 6px wide at node, tapers to 2px at tip -->
     <!-- From stalk 1 lower node — LEFT -->
     <path class="sumi-leaf" data-g="branch" fill="var(--fg)"
-      d="M110 376 C90 368 55 358 22 360 C55 354 90 362 112 374 Z"
-      style="--dur:.3s;--ink:.55;--rot:3deg"/>
+      d="M110 372 C85 362 50 352 20 356 C50 348 85 356 110 380 Z"
+      style="--dur:.3s;--ink:.6;--rot:3deg"/>
     <!-- From stalk 1 lower node — RIGHT -->
     <path class="sumi-leaf" data-g="branch" fill="var(--fg)"
-      d="M140 376 C160 366 195 356 230 358 C195 352 160 362 138 374 Z"
-      style="--dur:.28s;--ink:.5;--rot:-3deg"/>
+      d="M140 372 C165 362 200 352 232 356 C200 348 165 356 140 380 Z"
+      style="--dur:.28s;--ink:.55;--rot:-3deg"/>
     <!-- From stalk 1 upper node — LEFT -->
     <path class="sumi-leaf" data-g="branch" fill="var(--fg)"
-      d="M114 204 C95 194 62 184 30 188 C62 180 95 190 116 202 Z"
-      style="--dur:.26s;--ink:.5;--rot:4deg"/>
+      d="M114 200 C90 190 55 180 26 184 C55 176 90 184 114 208 Z"
+      style="--dur:.26s;--ink:.55;--rot:4deg"/>
     <!-- From stalk 1 upper node — RIGHT -->
     <path class="sumi-leaf" data-g="branch" fill="var(--fg)"
-      d="M136 204 C156 193 190 182 225 186 C190 178 156 189 134 202 Z"
-      style="--dur:.26s;--ink:.48;--rot:-4deg"/>
+      d="M136 200 C160 190 196 180 228 184 C196 176 160 184 136 208 Z"
+      style="--dur:.26s;--ink:.5;--rot:-4deg"/>
     <!-- From stalk 2 node — LEFT -->
     <path class="sumi-leaf" data-g="branch" fill="var(--fg)"
-      d="M198 343 C178 334 142 326 108 330 C142 322 178 330 200 341 Z"
-      style="--dur:.26s;--ink:.48;--rot:3deg"/>
+      d="M198 339 C170 330 135 322 104 326 C135 318 170 326 198 347 Z"
+      style="--dur:.26s;--ink:.52;--rot:3deg"/>
     <!-- From stalk 2 node — RIGHT -->
     <path class="sumi-leaf" data-g="branch" fill="var(--fg)"
-      d="M224 343 C244 334 278 326 315 330 C278 322 244 330 222 341 Z"
-      style="--dur:.28s;--ink:.5;--rot:-3deg"/>
+      d="M224 339 C252 330 288 322 318 326 C288 318 252 326 224 347 Z"
+      style="--dur:.28s;--ink:.55;--rot:-3deg"/>
 
     <!-- ═══ LEAVES — floep floep pssfftt ═══ -->
-    <!-- Each leaf = pointed oval: press(thick middle)→drag→lift(sharp tip) -->
-    <!-- Like ref #34: elongated eye/lens shape, ~60-80px long, ~12-16px wide -->
+    <!--
+      Each leaf = THICK lens/eye shape (ref #34):
+      - 70-90px long, 14-20px wide at thickest
+      - Sharp point at both ends
+      - Widest at ~40% from base
+      - Shape: M tip1 → C (curve out one side) → far tip → C (curve out other side) → Z
+    -->
 
-    <!-- ── CLUSTER 1: branch 1 tip (left of stalk 1, lower node) ── -->
-    <!-- Leaf up-left: long sweeping stroke -->
+    <!-- ── CLUSTER 1: left of stalk 1, lower node (3 leaves fanning) ── -->
+    <!-- Leaf 1: up-left, biggest -->
     <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
-      d="M22 360 C14 352 -4 330 -14 314 C-8 326 6 346 16 356
-         C-2 338 -20 310 -28 296 C-22 308 -4 334 12 354 Z"
-      style="--dur:.25s;--ink:.72;--rot:8deg;--ox:100%;--oy:100%"/>
-    <!-- Leaf down-left -->
+      d="M20 356 C6 340 -20 308 -36 288
+         C-28 302 -8 336 8 356
+         C-14 332 -34 300 -44 280
+         C-36 298 -14 340 6 362 Z"
+      style="--dur:.25s;--ink:.72;--rot:5deg;--ox:100%;--oy:50%"/>
+    <!-- Leaf 2: down-left -->
     <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
-      d="M22 360 C16 370 4 392 -4 410 C0 398 10 378 18 366
-         C6 384 -6 408 -12 424 C-4 412 8 388 16 370 Z"
-      style="--dur:.22s;--ink:.65;--rot:-6deg;--ox:100%;--oy:0%"/>
-    <!-- Leaf far up-left (lighter ink, longer) -->
+      d="M20 360 C8 378 -12 410 -24 432
+         C-16 416 0 386 14 366
+         C-6 390 -22 420 -32 440
+         C-24 424 -4 392 12 370 Z"
+      style="--dur:.22s;--ink:.65;--rot:-4deg;--ox:100%;--oy:50%"/>
+    <!-- Leaf 3: straight left, accent -->
     <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
-      d="M24 356 C16 344 -2 316 -14 296 C-6 310 10 336 20 350 Z"
-      style="--dur:.2s;--ink:.55;--rot:12deg;--ox:100%;--oy:100%"/>
+      d="M22 350 C8 338 -18 314 -34 298
+         C-24 312 -4 340 14 356
+         C-8 336 -28 310 -40 292
+         C-32 308 -10 342 10 360 Z"
+      style="--dur:.2s;--ink:.55;--rot:10deg;--ox:100%;--oy:50%"/>
 
-    <!-- ── CLUSTER 2: branch 2 tip (right of stalk 1, lower node) ── -->
+    <!-- ── CLUSTER 2: right of stalk 1, lower node ── -->
+    <!-- Leaf 1: up-right, biggest -->
     <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
-      d="M230 358 C240 346 258 320 268 302 C262 316 246 340 236 352
-         C250 332 268 306 278 290 C270 304 252 330 238 350 Z"
-      style="--dur:.25s;--ink:.7;--rot:-8deg;--ox:0%;--oy:100%"/>
+      d="M232 356 C246 338 270 306 286 286
+         C278 302 258 336 242 358
+         C264 328 284 296 296 278
+         C288 296 266 336 246 362 Z"
+      style="--dur:.25s;--ink:.7;--rot:-5deg;--ox:0%;--oy:50%"/>
+    <!-- Leaf 2: down-right -->
     <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
-      d="M230 358 C238 370 254 396 262 414 C256 400 244 378 236 364 Z"
-      style="--dur:.22s;--ink:.58;--rot:6deg;--ox:0%;--oy:0%"/>
+      d="M232 362 C244 380 266 412 278 434
+         C270 418 252 388 240 368
+         C256 394 274 424 284 442
+         C276 426 256 394 242 372 Z"
+      style="--dur:.22s;--ink:.6;--rot:4deg;--ox:0%;--oy:50%"/>
+    <!-- Leaf 3: accent -->
     <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
-      d="M234 354 C244 340 264 312 276 294 C268 308 250 334 240 350 Z"
-      style="--dur:.2s;--ink:.52;--rot:-12deg;--ox:0%;--oy:100%"/>
+      d="M236 352 C250 336 276 304 292 286
+         C284 302 262 338 248 358
+         C268 330 290 298 302 278
+         C294 296 270 334 252 360 Z"
+      style="--dur:.2s;--ink:.52;--rot:-10deg;--ox:0%;--oy:50%"/>
 
-    <!-- ── CLUSTER 3: branch 3 tip (left of stalk 1, upper node) ── -->
-    <!-- Big sweeping leaf up-left -->
+    <!-- ── CLUSTER 3: left of stalk 1, upper node ── -->
     <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
-      d="M30 188 C20 174 2 146 -10 126 C-4 142 14 168 24 182
-         C10 162 -8 132 -18 114 C-10 130 8 160 22 180 Z"
-      style="--dur:.25s;--ink:.7;--rot:10deg;--ox:100%;--oy:100%"/>
-    <!-- Leaf down-left -->
+      d="M26 184 C12 166 -14 134 -30 114
+         C-22 130 -2 164 14 186
+         C-8 158 -28 126 -38 108
+         C-30 126 -8 166 12 192 Z"
+      style="--dur:.25s;--ink:.68;--rot:8deg;--ox:100%;--oy:50%"/>
     <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
-      d="M30 188 C22 200 8 226 0 246 C6 232 18 210 26 196 Z"
-      style="--dur:.22s;--ink:.6;--rot:-7deg;--ox:100%;--oy:0%"/>
-    <!-- Small accent leaf -->
-    <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
-      d="M34 184 C24 170 6 142 -4 124 C2 138 18 164 30 180 Z"
-      style="--dur:.18s;--ink:.5;--rot:14deg;--ox:100%;--oy:100%"/>
+      d="M28 192 C16 210 -4 242 -16 264
+         C-8 248 8 218 22 198
+         C4 224 -14 254 -24 274
+         C-16 258 2 224 18 202 Z"
+      style="--dur:.22s;--ink:.58;--rot:-6deg;--ox:100%;--oy:50%"/>
 
-    <!-- ── CLUSTER 4: branch 4 tip (right of stalk 1, upper node) ── -->
+    <!-- ── CLUSTER 4: right of stalk 1, upper node ── -->
     <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
-      d="M225 186 C236 172 256 144 268 124 C260 140 242 166 232 180
-         C246 160 264 132 274 114 C266 130 248 158 234 178 Z"
-      style="--dur:.25s;--ink:.68;--rot:-10deg;--ox:0%;--oy:100%"/>
+      d="M228 184 C242 164 268 130 284 110
+         C276 128 254 164 240 188
+         C260 156 280 124 292 104
+         C284 122 262 162 244 192 Z"
+      style="--dur:.25s;--ink:.66;--rot:-8deg;--ox:0%;--oy:50%"/>
     <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
-      d="M225 186 C234 200 250 228 258 248 C252 234 238 210 230 196 Z"
-      style="--dur:.22s;--ink:.55;--rot:7deg;--ox:0%;--oy:0%"/>
+      d="M226 192 C238 212 258 244 270 266
+         C264 250 246 220 234 198
+         C250 226 268 258 278 278
+         C272 262 252 228 238 204 Z"
+      style="--dur:.22s;--ink:.54;--rot:6deg;--ox:0%;--oy:50%"/>
 
-    <!-- ── CLUSTER 5: branch 5 tip (left of stalk 2, node) ── -->
+    <!-- ── CLUSTER 5: left of stalk 2, node ── -->
     <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
-      d="M108 330 C96 316 74 290 62 272 C70 286 88 310 100 324
-         C84 304 66 278 56 262 C64 276 82 302 98 322 Z"
-      style="--dur:.24s;--ink:.68;--rot:8deg;--ox:100%;--oy:100%"/>
+      d="M104 326 C90 308 66 278 52 258
+         C60 274 80 306 96 328
+         C74 300 56 270 44 252
+         C52 268 74 304 92 332 Z"
+      style="--dur:.24s;--ink:.66;--rot:6deg;--ox:100%;--oy:50%"/>
     <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
-      d="M108 330 C100 342 84 368 76 386 C82 374 96 350 104 338 Z"
-      style="--dur:.2s;--ink:.55;--rot:-5deg;--ox:100%;--oy:0%"/>
+      d="M106 334 C94 352 74 384 62 406
+         C70 390 88 360 100 340
+         C84 366 66 396 56 414
+         C64 398 84 366 98 344 Z"
+      style="--dur:.2s;--ink:.54;--rot:-4deg;--ox:100%;--oy:50%"/>
 
-    <!-- ── CLUSTER 6: branch 6 tip (right of stalk 2, node) ── -->
+    <!-- ── CLUSTER 6: right of stalk 2, node ── -->
     <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
-      d="M315 330 C326 316 348 288 360 268 C352 284 332 312 322 324
-         C338 302 358 274 368 256 C360 272 340 300 326 320 Z"
-      style="--dur:.24s;--ink:.66;--rot:-9deg;--ox:0%;--oy:100%"/>
+      d="M318 326 C332 306 358 274 374 254
+         C366 272 344 306 330 330
+         C350 298 370 268 382 248
+         C374 266 352 302 336 332 Z"
+      style="--dur:.24s;--ink:.64;--rot:-7deg;--ox:0%;--oy:50%"/>
     <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
-      d="M315 330 C324 344 342 372 352 390 C344 378 328 352 320 338 Z"
-      style="--dur:.2s;--ink:.52;--rot:5deg;--ox:0%;--oy:0%"/>
+      d="M316 334 C328 354 350 388 362 410
+         C356 394 336 362 324 340
+         C342 370 360 402 370 420
+         C364 404 342 370 328 344 Z"
+      style="--dur:.2s;--ink:.52;--rot:5deg;--ox:0%;--oy:50%"/>
     <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
-      d="M320 326 C332 312 356 282 370 262 C362 278 340 306 328 322 Z"
-      style="--dur:.22s;--ink:.58;--rot:-14deg;--ox:0%;--oy:100%"/>
+      d="M322 322 C338 302 364 268 380 248
+         C372 266 348 302 334 326
+         C354 294 376 262 388 242
+         C380 260 356 298 340 328 Z"
+      style="--dur:.22s;--ink:.56;--rot:-12deg;--ox:0%;--oy:50%"/>
 
-    <!-- ── TOP CROWN: stalk 1 tip — elegant spray like ref step 26 ── -->
+    <!-- ── TOP CROWN: stalk 1 tip ── -->
     <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
-      d="M125 12 C116 -2 96 -28 82 -42 C92 -32 110 -8 122 6
-         C108 -14 90 -38 78 -52 C88 -40 106 -18 120 2 Z"
-      style="--dur:.24s;--ink:.58;--rot:12deg;--ox:100%;--oy:100%"/>
+      d="M124 14 C112 -4 88 -36 72 -54
+         C80 -38 100 -8 118 14
+         C96 -14 76 -44 64 -60
+         C74 -44 96 -12 114 16 Z"
+      style="--dur:.24s;--ink:.56;--rot:10deg;--ox:100%;--oy:100%"/>
     <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
-      d="M125 12 C134 -4 154 -32 168 -46 C158 -34 140 -10 128 6 Z"
-      style="--dur:.2s;--ink:.48;--rot:-10deg;--ox:0%;--oy:100%"/>
+      d="M126 14 C138 -6 162 -38 178 -56
+         C170 -40 150 -10 132 14
+         C154 -16 174 -46 186 -62
+         C178 -46 156 -14 136 16 Z"
+      style="--dur:.2s;--ink:.48;--rot:-8deg;--ox:0%;--oy:100%"/>
 
     <!-- ── TOP CROWN: stalk 2 tip ── -->
     <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
-      d="M209 52 C200 38 182 12 170 -4 C178 8 196 32 206 46 Z"
-      style="--dur:.2s;--ink:.5;--rot:10deg;--ox:100%;--oy:100%"/>
+      d="M208 54 C196 36 174 4 160 -14
+         C168 2 188 34 202 56
+         C182 26 164 -2 152 -20
+         C162 -2 184 32 200 58 Z"
+      style="--dur:.2s;--ink:.5;--rot:8deg;--ox:100%;--oy:100%"/>
     <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
-      d="M209 52 C218 36 238 8 250 -8 C242 6 224 32 212 46 Z"
-      style="--dur:.18s;--ink:.44;--rot:-8deg;--ox:0%;--oy:100%"/>
+      d="M212 54 C224 34 248 0 262 -18
+         C254 -2 234 32 218 56
+         C240 24 260 -6 272 -24
+         C264 -6 242 28 222 58 Z"
+      style="--dur:.18s;--ink:.44;--rot:-6deg;--ox:0%;--oy:100%"/>
     </g>
     <!-- === GOLD HIGHLIGHT — subtle shimmer along stalk edges === -->
     <path class="sumi-gold" data-g="gold" stroke="url(#ensoGold)" stroke-width="1.8" fill="none" filter="url(#inkSoft)"
