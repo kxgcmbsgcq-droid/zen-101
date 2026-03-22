@@ -216,21 +216,25 @@ input{font-family:inherit}
 .sumi-bg{position:absolute;inset:0;background:rgba(0,0,0,.85);
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .sumi-svg{position:relative;z-index:1;width:85vw;max-width:380px;height:auto}
-/* Ink strokes — authentic sumi-e feel */
-.sumi-stroke{fill:none;stroke:var(--fg);stroke-linecap:round;opacity:0;
-  transition:stroke-dashoffset 0s,opacity 0s}
-.sumi-stroke.draw{opacity:.55;transition:stroke-dashoffset var(--dur,2s) cubic-bezier(.15,.1,.25,1),opacity .3s ease}
-.sumi-stroke.reverse{transition:stroke-dashoffset .4s ease-in,opacity .3s ease .3s!important;opacity:0}
-/* Leaf strokes — faster, flicking motion */
-.sumi-leaf{fill:none;stroke:var(--fg);stroke-linecap:round;opacity:0;
-  transition:stroke-dashoffset 0s,opacity 0s}
-.sumi-leaf.draw{opacity:.45;transition:stroke-dashoffset var(--dur,.6s) cubic-bezier(0,.2,.3,1),opacity .2s ease}
-.sumi-leaf.reverse{transition:stroke-dashoffset .3s ease-in,opacity .2s ease .2s!important;opacity:0}
-/* Gold shimmer overlay */
+/* Ink strokes — filled shapes revealed by clip-path wipe */
+.sumi-stroke{opacity:0;clip-path:inset(100% 0 0 0);transition:clip-path 0s,opacity 0s}
+.sumi-stroke.draw{opacity:.6;clip-path:inset(0 0 0 0);
+  transition:clip-path var(--dur,1.5s) cubic-bezier(.15,.1,.25,1),opacity .3s ease}
+.sumi-stroke.reverse{clip-path:inset(100% 0 0 0);opacity:0;
+  transition:clip-path .4s ease-in,opacity .3s ease .3s!important}
+/* Leaf shapes — fast appear */
+.sumi-leaf{opacity:0;transform:scale(.3);transform-origin:center;
+  transition:opacity 0s,transform 0s}
+.sumi-leaf.draw{opacity:.55;transform:scale(1);
+  transition:opacity .15s ease,transform var(--dur,.4s) cubic-bezier(0,.5,.3,1)}
+.sumi-leaf.reverse{opacity:0;transform:scale(.3);
+  transition:opacity .2s ease,transform .3s ease-in!important}
+/* Gold shimmer overlay — still stroke-based */
 .sumi-gold{fill:none;stroke:url(#ensoGold);stroke-linecap:round;opacity:0;
   transition:stroke-dashoffset 0s,opacity 0s}
-.sumi-gold.draw{opacity:.7;transition:stroke-dashoffset 2s cubic-bezier(.32,.72,0,1),opacity .5s ease}
-.sumi-gold.reverse{transition:stroke-dashoffset .3s ease-in,opacity .2s ease!important;opacity:0}
+.sumi-gold.draw{opacity:.7;stroke-dashoffset:0;
+  transition:stroke-dashoffset 2s cubic-bezier(.32,.72,0,1),opacity .5s ease}
+.sumi-gold.reverse{opacity:0;transition:opacity .3s ease!important}
 /* Labels */
 .sumi-label{position:relative;z-index:1;font-family:var(--serif);font-size:18px;
   color:var(--gold1);opacity:0;transform:translateY(10px);
@@ -357,69 +361,126 @@ input{font-family:inherit}
 <div class="sumi-overlay" id="sumiOverlay">
   <div class="sumi-bg"></div>
   <canvas class="sparkle-canvas" id="sparkleCanvas"></canvas>
-  <svg class="sumi-svg" viewBox="0 0 380 520" fill="none">
-    <!-- === STALKS — confident upward strokes, slight wobble === -->
-    <!-- Stalk 1 (main, thick) — pfft! one bold stroke bottom to top -->
-    <path class="sumi-stroke" data-g="stalk" stroke-width="5.5"
-      d="M125 500 C124 460 126 420 123 380 C121 340 125 300 124 260 C123 220 126 180 124 140 C123 100 125 60 126 25"
-      style="--len:480;--dur:2.2s" stroke-dasharray="480" stroke-dashoffset="480"/>
-    <!-- Stalk 1 ink-load shadow (thicker, faint — wet brush base) -->
-    <path class="sumi-stroke" data-g="stalk" stroke-width="9" style="--len:480;--dur:2.2s;opacity:0"
-      d="M125 500 C124 460 126 420 123 380 C121 340 125 300 124 260 C123 220 126 180 124 140 C123 100 125 60 126 25"
-      stroke-dasharray="480" stroke-dashoffset="480"/>
-    <!-- Stalk 2 (medium) — pft! -->
-    <path class="sumi-stroke" data-g="stalk" stroke-width="4"
-      d="M215 500 C216 465 214 425 215 385 C216 345 214 305 215 265 C216 225 215 185 216 145 C215 120 216 95 215 80"
-      style="--len:425;--dur:1.8s" stroke-dasharray="425" stroke-dashoffset="425"/>
-    <!-- Stalk 3 (thin, young shoot) — pf! -->
-    <path class="sumi-stroke" data-g="stalk" stroke-width="2.8"
-      d="M295 500 C294 470 296 435 295 400 C294 365 295 330 296 295 C295 265 296 240 295 215"
-      style="--len:290;--dur:1.4s" stroke-dasharray="290" stroke-dashoffset="290"/>
-    <!-- === NODES — quick horizontal dabs at joints === -->
-    <path class="sumi-stroke" data-g="node" stroke-width="4.5"
-      d="M113 380 C118 379 132 381 137 380" style="--len:24;--dur:.15s" stroke-dasharray="24" stroke-dashoffset="24"/>
-    <path class="sumi-stroke" data-g="node" stroke-width="4"
-      d="M114 260 C119 259 131 261 136 260" style="--len:22;--dur:.15s" stroke-dasharray="22" stroke-dashoffset="22"/>
-    <path class="sumi-stroke" data-g="node" stroke-width="3.5"
-      d="M115 140 C119 139 131 141 135 140" style="--len:20;--dur:.15s" stroke-dasharray="20" stroke-dashoffset="20"/>
-    <path class="sumi-stroke" data-g="node" stroke-width="3.5"
-      d="M206 385 C210 384 220 386 224 385" style="--len:18;--dur:.12s" stroke-dasharray="18" stroke-dashoffset="18"/>
-    <path class="sumi-stroke" data-g="node" stroke-width="3"
-      d="M207 265 C211 264 219 266 223 265" style="--len:16;--dur:.12s" stroke-dasharray="16" stroke-dashoffset="16"/>
-    <!-- === LEAVES — fast flicking strokes! pfft pft pft === -->
-    <!-- Leaf cluster from stalk 1, node at 140 -->
-    <path class="sumi-leaf" data-g="leaf" stroke-width="3.5"
-      d="M124 140 C108 128 78 108 42 115" style="--len:90;--dur:.35s" stroke-dasharray="90" stroke-dashoffset="90"/>
-    <path class="sumi-leaf" data-g="leaf" stroke-width="2.5"
-      d="M124 140 C112 125 88 100 55 92" style="--len:85;--dur:.3s" stroke-dasharray="85" stroke-dashoffset="85"/>
-    <path class="sumi-leaf" data-g="leaf" stroke-width="3"
-      d="M126 140 C142 126 172 108 210 112" style="--len:90;--dur:.35s" stroke-dasharray="90" stroke-dashoffset="90"/>
-    <!-- Leaf cluster from stalk 1, node at 260 -->
-    <path class="sumi-leaf" data-g="leaf" stroke-width="3"
-      d="M124 260 C110 248 82 232 48 238" style="--len:82;--dur:.3s" stroke-dasharray="82" stroke-dashoffset="82"/>
-    <path class="sumi-leaf" data-g="leaf" stroke-width="2.8"
-      d="M126 260 C144 250 176 238 212 244" style="--len:90;--dur:.35s" stroke-dasharray="90" stroke-dashoffset="90"/>
-    <!-- Leaf from stalk 2 -->
-    <path class="sumi-leaf" data-g="leaf" stroke-width="2.8"
-      d="M215 265 C200 252 172 240 140 246" style="--len:80;--dur:.3s" stroke-dasharray="80" stroke-dashoffset="80"/>
-    <path class="sumi-leaf" data-g="leaf" stroke-width="2.5"
-      d="M216 265 C234 254 264 242 300 248" style="--len:88;--dur:.35s" stroke-dasharray="88" stroke-dashoffset="88"/>
-    <!-- Small leaf from stalk 3 -->
-    <path class="sumi-leaf" data-g="leaf" stroke-width="2.2"
-      d="M295 295 C280 284 256 274 228 280" style="--len:72;--dur:.28s" stroke-dasharray="72" stroke-dashoffset="72"/>
-    <!-- Top leaves from stalk 1 — reaching upward -->
-    <path class="sumi-leaf" data-g="leaf" stroke-width="2.8"
-      d="M125 60 C110 46 82 28 50 35" style="--len:82;--dur:.3s" stroke-dasharray="82" stroke-dashoffset="82"/>
-    <path class="sumi-leaf" data-g="leaf" stroke-width="2.2"
-      d="M126 55 C138 40 158 22 185 28" style="--len:68;--dur:.25s" stroke-dasharray="68" stroke-dashoffset="68"/>
-    <!-- === GOLD SHIMMER — traces the main stalk + select leaves === -->
-    <path class="sumi-gold" data-g="gold" stroke-width="3"
-      d="M125 500 C124 460 126 420 123 380 C121 340 125 300 124 260 C123 220 126 180 124 140 C123 100 125 60 126 25"
+  <svg class="sumi-svg" viewBox="0 0 380 560" fill="none">
+    <defs>
+      <filter id="inkBleed" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency=".04" numOctaves="4" result="noise"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <filter id="inkSoft"><feGaussianBlur stdDeviation=".8"/></filter>
+    </defs>
+    <g filter="url(#inkBleed)">
+    <!-- === STALK 1 — thick main bamboo, tapered shape === -->
+    <path class="sumi-stroke" data-g="stalk" fill="var(--fg)" stroke="none"
+      d="M112 530 C113 530 137 530 138 530 C139 500 136 440 137 390
+         C137 388 113 388 113 390
+         C112 440 114 500 112 530 Z"
+      clip-path="inset(0 0 100% 0)" style="--dur:1.8s"/>
+    <path class="sumi-stroke" data-g="stalk" fill="var(--fg)" stroke="none"
+      d="M113 390 C113 388 137 388 137 390
+         C136 340 138 280 137 230
+         C136 228 114 228 113 230
+         C114 280 112 340 113 390 Z"
+      clip-path="inset(0 0 100% 0)" style="--dur:1.6s"/>
+    <path class="sumi-stroke" data-g="stalk" fill="var(--fg)" stroke="none"
+      d="M114 230 C114 228 136 228 136 230
+         C136 180 137 120 135 70
+         C134 68 116 68 115 70
+         C116 120 114 180 114 230 Z"
+      clip-path="inset(0 0 100% 0)" style="--dur:1.5s"/>
+    <!-- Stalk 1 top (tapers) -->
+    <path class="sumi-stroke" data-g="stalk" fill="var(--fg)" stroke="none"
+      d="M116 70 C116 68 134 68 134 70
+         C133 45 128 20 125 8
+         C122 20 117 45 116 70 Z"
+      clip-path="inset(0 0 100% 0)" style="--dur:.8s"/>
+    <!-- === STALK 2 — medium, slightly thinner === -->
+    <path class="sumi-stroke" data-g="stalk" fill="var(--fg)" stroke="none"
+      d="M198 530 C199 530 218 530 219 530
+         C220 470 217 390 218 310
+         C218 308 199 308 198 310
+         C199 390 197 470 198 530 Z"
+      clip-path="inset(0 0 100% 0)" style="--dur:1.6s"/>
+    <path class="sumi-stroke" data-g="stalk" fill="var(--fg)" stroke="none"
+      d="M199 310 C199 308 218 308 218 310
+         C218 250 219 180 217 120
+         C216 118 201 118 200 120
+         C201 180 199 250 199 310 Z"
+      clip-path="inset(0 0 100% 0)" style="--dur:1.4s"/>
+    <!-- Stalk 2 top -->
+    <path class="sumi-stroke" data-g="stalk" fill="var(--fg)" stroke="none"
+      d="M201 120 C201 118 216 118 216 120
+         C215 95 211 65 208 50
+         C206 65 202 95 201 120 Z"
+      clip-path="inset(0 0 100% 0)" style="--dur:.6s"/>
+    <!-- === STALK 3 — thin young shoot === -->
+    <path class="sumi-stroke" data-g="stalk" fill="var(--fg)" stroke="none"
+      d="M285 530 C286 530 298 530 299 530
+         C300 470 297 400 298 330
+         C298 328 287 328 286 330
+         C287 400 285 470 285 530 Z"
+      clip-path="inset(0 0 100% 0)" style="--dur:1.2s"/>
+    <path class="sumi-stroke" data-g="stalk" fill="var(--fg)" stroke="none"
+      d="M287 330 C287 328 298 328 298 330
+         C298 280 299 230 296 180
+         C295 178 289 178 288 180
+         C290 230 287 280 287 330 Z"
+      clip-path="inset(0 0 100% 0)" style="--dur:1s"/>
+
+    <!-- === NODES — bulging joints === -->
+    <ellipse class="sumi-stroke" data-g="node" fill="var(--fg)" cx="125" cy="390" rx="18" ry="6"
+      clip-path="inset(0 0 100% 0)" style="--dur:.2s"/>
+    <ellipse class="sumi-stroke" data-g="node" fill="var(--fg)" cx="125" cy="230" rx="16" ry="5"
+      clip-path="inset(0 0 100% 0)" style="--dur:.2s"/>
+    <ellipse class="sumi-stroke" data-g="node" fill="var(--fg)" cx="125" cy="70" rx="14" ry="5"
+      clip-path="inset(0 0 100% 0)" style="--dur:.15s"/>
+    <ellipse class="sumi-stroke" data-g="node" fill="var(--fg)" cx="208" cy="310" rx="15" ry="5"
+      clip-path="inset(0 0 100% 0)" style="--dur:.2s"/>
+    <ellipse class="sumi-stroke" data-g="node" fill="var(--fg)" cx="208" cy="120" rx="13" ry="4.5"
+      clip-path="inset(0 0 100% 0)" style="--dur:.15s"/>
+    <ellipse class="sumi-stroke" data-g="node" fill="var(--fg)" cx="292" cy="330" rx="10" ry="4"
+      clip-path="inset(0 0 100% 0)" style="--dur:.15s"/>
+
+    <!-- === LEAVES — tapered brush flicks (wide base → sharp tip) === -->
+    <!-- Cluster from stalk 1 top -->
+    <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
+      d="M120 68 C105 55 70 28 35 35 C70 22 108 42 124 62 Z" style="--dur:.4s"/>
+    <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
+      d="M130 65 C145 48 175 18 210 22 C178 12 148 38 132 58 Z" style="--dur:.35s"/>
+    <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
+      d="M118 72 C100 62 60 52 25 62 C58 48 100 52 122 66 Z" style="--dur:.35s"/>
+    <!-- Cluster from stalk 1 node 230 -->
+    <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
+      d="M114 228 C96 215 55 192 15 200 C52 185 96 200 118 222 Z" style="--dur:.4s"/>
+    <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
+      d="M136 228 C155 215 195 195 240 200 C198 188 158 205 138 222 Z" style="--dur:.38s"/>
+    <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
+      d="M112 234 C95 248 62 272 30 268 C60 278 95 258 116 240 Z" style="--dur:.35s"/>
+    <!-- Cluster from stalk 2 node 310 -->
+    <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
+      d="M199 308 C180 294 142 270 100 275 C138 262 182 282 203 302 Z" style="--dur:.38s"/>
+    <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
+      d="M218 308 C238 294 278 272 325 278 C282 265 242 285 220 302 Z" style="--dur:.4s"/>
+    <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
+      d="M202 315 C188 332 158 362 130 358 C155 368 190 342 206 322 Z" style="--dur:.32s"/>
+    <!-- From stalk 2 top -->
+    <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
+      d="M204 118 C188 105 155 82 120 88 C152 75 190 92 208 112 Z" style="--dur:.35s"/>
+    <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
+      d="M212 115 C228 100 260 75 300 80 C264 68 232 88 214 108 Z" style="--dur:.38s"/>
+    <!-- From stalk 3 -->
+    <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
+      d="M287 328 C272 315 240 295 205 300 C238 288 274 305 290 322 Z" style="--dur:.35s"/>
+    <path class="sumi-leaf" data-g="leaf" fill="var(--fg)"
+      d="M298 325 C312 312 342 288 370 292 C345 280 316 300 300 318 Z" style="--dur:.32s"/>
+    </g>
+    <!-- === GOLD HIGHLIGHT — subtle edge light on main stalk === -->
+    <path class="sumi-gold" data-g="gold" stroke="url(#ensoGold)" stroke-width="2" fill="none" filter="url(#inkSoft)"
+      d="M136 530 C136 440 137 340 136 230 C136 160 135 80 134 20"
+      style="--len:520" stroke-dasharray="520" stroke-dashoffset="520"/>
+    <path class="sumi-gold" data-g="gold" stroke="url(#ensoGold)" stroke-width="1.5" fill="none" filter="url(#inkSoft)"
+      d="M218 530 C218 430 218 330 217 230 C217 170 216 100 215 55"
       style="--len:480" stroke-dasharray="480" stroke-dashoffset="480"/>
-    <path class="sumi-gold" data-g="gold" stroke-width="2"
-      d="M124 140 C108 128 78 108 42 115" style="--len:90" stroke-dasharray="90" stroke-dashoffset="90"/>
-    <path class="sumi-gold" data-g="gold" stroke-width="2"
-      d="M126 140 C142 126 172 108 210 112" style="--len:90" stroke-dasharray="90" stroke-dashoffset="90"/>
   </svg>
   <div class="sumi-label" id="sumiLabel">Voorgedragen</div>
   <div class="sumi-date" id="sumiDate"></div>
@@ -653,10 +714,10 @@ function triggerSumiE(story){
   overlay.classList.add('active');
   if(navigator.vibrate)navigator.vibrate([10,40,10]);
 
-  // Reset all strokes first
+  // Reset all elements
   document.querySelectorAll('.sumi-stroke,.sumi-leaf,.sumi-gold').forEach(el=>{
     el.classList.remove('draw','reverse');
-    el.style.strokeDashoffset=el.getAttribute('stroke-dashoffset');
+    if(el.getAttribute('stroke-dashoffset'))el.style.strokeDashoffset=el.getAttribute('stroke-dashoffset');
   });
 
   // === PFFT PFT PFT — staggered brush strokes ===
@@ -666,35 +727,36 @@ function triggerSumiE(story){
   const golds=document.querySelectorAll('.sumi-gold[data-g="gold"]');
 
   let t=0;
-  // Stalks — bold confident strokes
+  // Stalks — bold confident strokes, segments revealed bottom-to-top
   stalks.forEach((el,i)=>{
-    const d=t;sumiTimers.push(setTimeout(()=>{el.style.strokeDashoffset='0';el.classList.add('draw')},d));
-    t+=i===0?500:400; // second ink shadow stroke comes with first
+    const d=t;sumiTimers.push(setTimeout(()=>{el.classList.add('draw')},d));
+    // Stalk segments: 2 per stalk, fast overlap
+    t+=(i%2===0)?200:500;
   });
-  // Nodes — quick dabs
-  t+=200;
+  // Nodes — quick dabs at joints
+  t+=100;
   nodes.forEach((el)=>{
-    const d=t;sumiTimers.push(setTimeout(()=>{el.style.strokeDashoffset='0';el.classList.add('draw')},d));
-    t+=120;
+    const d=t;sumiTimers.push(setTimeout(()=>{el.classList.add('draw')},d));
+    t+=80;
   });
   // Leaves — pfft pft pft! Fast flicks in bursts
-  t+=300;
+  t+=200;
   leaves.forEach((el,i)=>{
     const d=t;sumiTimers.push(setTimeout(()=>{
-      el.style.strokeDashoffset='0';el.classList.add('draw');
-      if(navigator.vibrate&&i%2===0)navigator.vibrate(5); // tiny tick per leaf burst
+      el.classList.add('draw');
+      if(navigator.vibrate&&i%3===0)navigator.vibrate(5);
     },d));
-    // Pairs come fast (100ms), gaps between clusters (250ms)
-    t+=(i%2===0)?100:280;
+    // Pairs come fast (80ms), gaps between clusters (200ms)
+    t+=(i%2===0)?80:220;
   });
   // Gold shimmer — after ink dries
-  t+=600;
+  t+=500;
   golds.forEach((el)=>{
     const d=t;sumiTimers.push(setTimeout(()=>{el.style.strokeDashoffset='0';el.classList.add('draw')},d));
-    t+=300;
+    t+=400;
   });
   // Labels
-  t+=400;
+  t+=300;
   sumiTimers.push(setTimeout(()=>{
     $('sumiLabel').classList.add('show');
     $('sumiDate').classList.add('show');
@@ -748,10 +810,10 @@ function reverseSumiE(){
   stopSparkles();
   if(navigator.vibrate)navigator.vibrate([5,20,5]);
 
-  // Reverse all strokes — fast retract
+  // Reverse all — fast retract
   document.querySelectorAll('.sumi-stroke,.sumi-leaf,.sumi-gold').forEach(el=>{
     el.classList.add('reverse');
-    el.style.strokeDashoffset=el.getAttribute('stroke-dashoffset');
+    if(el.getAttribute('stroke-dashoffset'))el.style.strokeDashoffset=el.getAttribute('stroke-dashoffset');
   });
   $('sumiLabel').classList.remove('show');
   $('sumiDate').classList.remove('show');
@@ -775,10 +837,10 @@ function dismissSumiE(){
   const overlay=$('sumiOverlay');
   cleanupSumiReverse();
   overlay.classList.remove('active');
-  // Reset strokes
+  // Reset all elements
   document.querySelectorAll('.sumi-stroke,.sumi-leaf,.sumi-gold').forEach(el=>{
     el.classList.remove('draw','reverse');
-    el.style.strokeDashoffset=el.getAttribute('stroke-dashoffset');
+    if(el.getAttribute('stroke-dashoffset'))el.style.strokeDashoffset=el.getAttribute('stroke-dashoffset');
   });
   $('sumiLabel').classList.remove('show');
   $('sumiDate').classList.remove('show');
