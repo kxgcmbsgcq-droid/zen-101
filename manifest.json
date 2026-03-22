@@ -1,7 +1,7 @@
 {
-  "name": "101 Zen Stories",
-  "short_name": "Zen 101",
-  "description": "101 Zen Stories — origineel Engels + Nederlandse vertaling",
+  "name": "JiGyo",
+  "short_name": "JiGyo",
+  "description": "JiGyo — 101 Zen verhalen, origineel + Nederlands",
   "start_url": "/zen-101/",
   "scope": "/zen-101/",
   "display": "standalone",
