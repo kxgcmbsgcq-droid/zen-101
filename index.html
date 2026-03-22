@@ -13,33 +13,28 @@
 <link rel="manifest" href="manifest.json">
 <title>101 Zen Stories</title>
 <style>
-:root {
-  --bg: #F7F3EC; --bg2: #FFFFFF; --fg: #1D1D1F; --fg2: #86868B; --fg3: #C7C7CC;
-  --accent: #8B6F47; --accent2: #C9A96E; --accent-s: rgba(139,111,71,.07); --accent-m: rgba(139,111,71,.14);
-  --green: #34C759;
-  --card: #FFFFFF; --card-h: #FDFCFA;
-  --b: rgba(0,0,0,.06); --b2: rgba(0,0,0,.12);
-  --sh: 0 1px 3px rgba(0,0,0,.04), 0 4px 12px rgba(0,0,0,.03);
-  --sh-l: 0 4px 20px rgba(0,0,0,.06), 0 1px 4px rgba(0,0,0,.04);
-  --sh-xl: 0 12px 40px rgba(0,0,0,.1), 0 2px 8px rgba(0,0,0,.05);
-  --r: 16px;
-  --st: env(safe-area-inset-top); --sb: env(safe-area-inset-bottom);
-  --serif: 'New York', 'Iowan Old Style', Georgia, serif;
-  --sans: -apple-system, 'SF Pro Text', system-ui, sans-serif;
-  --disp: -apple-system, 'SF Pro Display', system-ui, sans-serif;
+:root{
+  --bg:#F7F3EC;--bg2:#FFF;--fg:#1D1D1F;--fg2:#86868B;--fg3:#C7C7CC;
+  --accent:#8B6F47;--accent2:#C9A96E;--accent-s:rgba(139,111,71,.07);--accent-m:rgba(139,111,71,.14);
+  --gold1:#F0DEB8;--gold2:#C9A96E;--gold3:#8B6F47;
+  --green:#34C759;
+  --card:#FFF;--b:rgba(0,0,0,.06);--b2:rgba(0,0,0,.12);
+  --sh:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.03);
+  --sh-l:0 4px 20px rgba(0,0,0,.06),0 1px 4px rgba(0,0,0,.04);
+  --r:16px;--st:env(safe-area-inset-top);--sb:env(safe-area-inset-bottom);
+  --serif:'New York','Iowan Old Style',Georgia,serif;
+  --sans:-apple-system,'SF Pro Text',system-ui,sans-serif;
+  --disp:-apple-system,'SF Pro Display',system-ui,sans-serif;
 }
-@media(prefers-color-scheme:dark) {
-  :root {
-    --bg: #141416; --bg2: #1C1C1E; --fg: #F5F5F7; --fg2: #86868B; --fg3: #3A3A3C;
-    --accent: #C9A96E; --accent2: #E8D5B0; --accent-s: rgba(201,169,110,.08); --accent-m: rgba(201,169,110,.16);
-    --card: #1C1C1E; --card-h: #232326;
-    --b: rgba(255,255,255,.06); --b2: rgba(255,255,255,.1);
-    --sh: 0 1px 3px rgba(0,0,0,.3), 0 4px 12px rgba(0,0,0,.2);
-    --sh-l: 0 4px 20px rgba(0,0,0,.35), 0 1px 4px rgba(0,0,0,.2);
-    --sh-xl: 0 12px 40px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.3);
-  }
-}
-
+@media(prefers-color-scheme:dark){:root{
+  --bg:#141416;--bg2:#1C1C1E;--fg:#F5F5F7;--fg2:#86868B;--fg3:#3A3A3C;
+  --accent:#C9A96E;--accent2:#E8D5B0;--accent-s:rgba(201,169,110,.08);--accent-m:rgba(201,169,110,.16);
+  --gold1:#E8D5B0;--gold2:#C9A96E;--gold3:#8B6F47;
+  --card:#1C1C1E;
+  --b:rgba(255,255,255,.06);--b2:rgba(255,255,255,.1);
+  --sh:0 1px 3px rgba(0,0,0,.3),0 4px 12px rgba(0,0,0,.2);
+  --sh-l:0 4px 20px rgba(0,0,0,.35),0 1px 4px rgba(0,0,0,.2);
+}}
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{font-family:var(--sans);background:var(--bg);color:var(--fg);
   -webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%;
@@ -48,7 +43,7 @@ body{min-height:100dvh;overscroll-behavior:none}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
 input{font-family:inherit}
 
-/* ═══ STICKY NAV ═══ */
+/* ═══ NAV ═══ */
 .nav{position:sticky;top:0;z-index:100;
   padding:calc(var(--st) + 8px) 20px 10px;
   background:color-mix(in srgb,var(--bg) 82%,transparent);
@@ -71,7 +66,7 @@ input{font-family:inherit}
 .hero h1{font-family:var(--serif);font-size:34px;font-weight:700;letter-spacing:-.5px;line-height:1.1}
 .hero-sub{font-size:14px;color:var(--fg2);margin-top:4px;font-style:italic}
 
-/* ═══ PROGRESS CARD ═══ */
+/* ═══ PROGRESS ═══ */
 .prog{max-width:600px;margin:16px auto 0;padding:0 24px}
 .prog-card{display:flex;align-items:center;gap:16px;padding:16px 18px;
   background:var(--card);border-radius:var(--r);border:.5px solid var(--b);box-shadow:var(--sh)}
@@ -87,35 +82,31 @@ input{font-family:inherit}
 .prog-d{font-size:12px;color:var(--fg2);margin-top:1px}
 .today-btn{padding:9px 18px;border-radius:22px;font-size:13px;font-weight:600;
   background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;
-  letter-spacing:.2px;box-shadow:0 2px 10px rgba(139,111,71,.3);
-  transition:transform .15s,box-shadow .15s}
+  letter-spacing:.2px;box-shadow:0 2px 10px rgba(139,111,71,.3);transition:transform .15s}
 .today-btn:active{transform:scale(.93)}
-@media(prefers-color-scheme:dark){.today-btn{box-shadow:0 2px 10px rgba(201,169,110,.25)}}
 
 /* ═══ SEARCH ═══ */
 .srch{max-width:600px;margin:14px auto 0;padding:0 24px;position:relative}
 .srch-i{position:absolute;left:38px;top:50%;transform:translateY(-50%);
   font-size:14px;color:var(--fg3);pointer-events:none;z-index:1}
 .srch input{width:100%;padding:11px 16px 11px 36px;border-radius:12px;border:.5px solid var(--b);
-  background:var(--bg2);font-size:16px;color:var(--fg);box-shadow:var(--sh);outline:none;
-  transition:all .2s}
+  background:var(--bg2);font-size:16px;color:var(--fg);box-shadow:var(--sh);outline:none;transition:all .2s}
 .srch input:focus{border-color:var(--accent);box-shadow:var(--sh-l),0 0 0 3px var(--accent-s)}
 .srch input::placeholder{color:var(--fg3)}
 
-/* ═══ LANG TOGGLE ═══ */
+/* ═══ LANG ═══ */
 .lang{max-width:600px;margin:12px auto 0;padding:0 24px;display:flex;align-items:center;gap:10px}
 .lang-label{font-size:11px;color:var(--fg2);font-weight:500;letter-spacing:.5px;text-transform:uppercase;flex-shrink:0}
 .toggle-wrap{position:relative;width:52px;height:30px;flex-shrink:0}
 .toggle-input{opacity:0;width:0;height:0;position:absolute}
-.toggle-track{position:absolute;inset:0;border-radius:15px;
-  background:var(--accent);transition:background .3s;cursor:pointer}
+.toggle-track{position:absolute;inset:0;border-radius:15px;background:var(--accent);transition:background .3s;cursor:pointer}
 .toggle-input:not(:checked)+.toggle-track{background:var(--fg3)}
 .toggle-thumb{position:absolute;top:2px;left:2px;width:26px;height:26px;border-radius:50%;
   background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .3s cubic-bezier(.32,.72,0,1)}
 .toggle-input:checked~.toggle-thumb{transform:translateX(22px)}
 .lang-val{font-size:14px;font-weight:600;min-width:80px}
 
-/* ═══ TAG BAR ═══ */
+/* ═══ TAGS ═══ */
 .tags{max-width:600px;margin:12px auto 0;padding:0 20px;display:flex;gap:6px;
   overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
   mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent);
@@ -125,8 +116,7 @@ input{font-family:inherit}
 .tag{padding:6px 13px;border-radius:20px;font-size:12px;font-weight:500;white-space:nowrap;
   flex-shrink:0;border:.5px solid var(--b);background:var(--bg2);color:var(--fg2);
   letter-spacing:.2px;transition:all .2s}
-.tag.on{background:var(--accent);color:#fff;border-color:var(--accent);
-  box-shadow:0 2px 8px rgba(139,111,71,.2)}
+.tag.on{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 8px rgba(139,111,71,.2)}
 .tag .tc{font-size:10px;opacity:.65;margin-left:2px}
 
 /* ═══ LIST ═══ */
@@ -141,9 +131,12 @@ input{font-family:inherit}
   background:linear-gradient(180deg,var(--accent),color-mix(in srgb,var(--accent) 30%,transparent));
   opacity:0;transition:opacity .3s}
 .card.read .card-bar{opacity:1}
+.card.used .card-bar{background:linear-gradient(180deg,var(--gold1),var(--gold3))}
 .card-inner{flex:1;padding:14px 0 14px 16px;display:flex;gap:14px;align-items:flex-start;min-width:0}
 .card-n{font-family:var(--disp);font-size:26px;font-weight:700;color:var(--accent);opacity:.2;
   line-height:1;min-width:32px;text-align:right;font-variant-numeric:tabular-nums;padding-top:2px}
+.card.read .card-n{opacity:.45}
+.card.used .card-n{opacity:.7;color:var(--gold2)}
 .card-txt{flex:1;min-width:0}
 .card-h{font-family:var(--serif);font-size:16px;font-weight:600;line-height:1.3}
 .card-h2{font-size:13px;color:var(--fg2);margin-top:1px;font-style:italic;line-height:1.3;
@@ -152,13 +145,12 @@ input{font-family:inherit}
 .card-min{font-size:11px;color:var(--fg3)}
 .card-tg{font-size:10px;color:var(--accent);background:var(--accent-s);
   padding:2px 7px;border-radius:6px;font-weight:500;letter-spacing:.2px}
+.card-date{font-size:10px;color:var(--green);font-weight:500}
 .card-end{display:flex;align-items:center;padding:0 14px;flex-shrink:0}
 .card-chev{color:var(--fg3);font-size:13px;font-weight:300}
-.card-star{position:absolute;top:8px;right:8px;font-size:11px;color:var(--accent);
-  opacity:0;transition:opacity .2s}
+.card-star{position:absolute;top:8px;right:8px;font-size:11px;color:var(--accent);opacity:0;transition:opacity .2s}
 .card.bm .card-star{opacity:1}
 
-/* ═══ EMPTY ═══ */
 .empty{text-align:center;padding:60px 20px;color:var(--fg2)}
 .empty-ico{font-size:44px;margin-bottom:12px;opacity:.3}
 .empty-t{font-family:var(--serif);font-size:17px}
@@ -168,6 +160,7 @@ input{font-family:inherit}
   transform:translateY(100%);transition:transform .4s cubic-bezier(.32,.72,0,1);
   overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
 .reader.open{transform:translateY(0)}
+
 .r-nav{position:sticky;top:0;z-index:10;
   padding:calc(var(--st) + 8px) 16px 10px;
   background:color-mix(in srgb,var(--bg) 82%,transparent);
@@ -186,39 +179,98 @@ input{font-family:inherit}
 .r-ar:active{background:var(--accent);color:#fff}
 .r-ar:disabled{opacity:.2;pointer-events:none}
 
-.r-body{max-width:600px;margin:0 auto;padding:32px 28px calc(60px + var(--sb))}
-.r-num{font-family:var(--serif);font-size:80px;font-weight:700;line-height:1;margin-bottom:-6px;
-  background:linear-gradient(180deg,var(--accent),color-mix(in srgb,var(--accent) 20%,transparent));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.r-h1{font-family:var(--serif);font-size:28px;font-weight:700;line-height:1.2;letter-spacing:-.3px}
-.r-h2{font-family:var(--serif);font-size:18px;color:var(--fg2);font-style:italic;
-  font-weight:400;margin-top:2px}
-.r-meta{display:flex;gap:6px;margin:12px 0 32px;flex-wrap:wrap;align-items:center}
-.r-tag{font-size:11px;color:var(--accent);background:var(--accent-s);
-  padding:3px 10px;border-radius:8px;font-weight:500}
-.r-min{font-size:11px;color:var(--fg3);padding:3px 10px;border-radius:8px;
-  background:color-mix(in srgb,var(--fg) 4%,transparent)}
+/* ═══ READER CONTENT — PREMIUM ═══ */
+.r-body{max-width:600px;margin:0 auto;padding:40px 28px calc(60px + var(--sb))}
 
-.r-text{font-family:var(--serif);font-size:19px;line-height:1.85;color:var(--fg)}
-.r-text p{margin-bottom:1.15em}
+/* Number as subtle watermark */
+.r-num-wrap{position:relative;margin-bottom:8px}
+.r-num{font-family:var(--serif);font-size:96px;font-weight:700;line-height:.85;
+  background:linear-gradient(160deg,var(--gold1),var(--gold2),var(--gold3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  opacity:.18;letter-spacing:-3px}
+
+/* Titles */
+.r-h1{font-family:var(--serif);font-size:30px;font-weight:700;line-height:1.15;
+  letter-spacing:-.4px;margin-bottom:6px}
+.r-h2{font-family:var(--serif);font-size:17px;color:var(--fg2);font-style:italic;
+  font-weight:400;line-height:1.3}
+
+/* Decorative ink line */
+.r-ink{height:2px;margin:24px 0;border-radius:1px;
+  background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 15%,transparent));
+  width:60px;opacity:.4}
+
+/* Tags — more subtle */
+.r-meta{display:flex;gap:6px;margin-bottom:36px;flex-wrap:wrap;align-items:center}
+.r-tag{font-size:10px;color:var(--fg2);background:color-mix(in srgb,var(--fg) 4%,transparent);
+  padding:3px 10px;border-radius:8px;font-weight:500;letter-spacing:.3px}
+.r-min{font-size:10px;color:var(--fg3);padding:3px 10px;border-radius:8px;
+  background:color-mix(in srgb,var(--fg) 3%,transparent)}
+
+/* Story text — premium typography */
+.r-text{font-family:var(--serif);font-size:20px;line-height:1.9;color:var(--fg);
+  letter-spacing:.1px}
+.r-text p{margin-bottom:1.2em}
 .r-text p:last-child{margin-bottom:0}
+.r-text p:first-child::first-letter{
+  font-size:3.2em;float:left;line-height:.8;margin:4px 8px 0 -2px;
+  font-weight:700;color:var(--accent);font-family:var(--serif)}
 
 /* Translation peek */
-.r-peek{margin-top:36px;border-top:.5px solid var(--b);padding-top:20px}
+.r-peek{margin-top:40px;border-top:.5px solid var(--b);padding-top:20px}
 .r-peek-btn{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;
-  color:var(--accent);padding:8px 0;width:100%}
-.r-peek-btn .arrow{transition:transform .3s;font-size:11px}
-.r-peek-btn.open .arrow{transform:rotate(90deg)}
+  color:var(--accent);padding:8px 0;width:100%;text-align:left}
+.r-peek-btn .arrow{transition:transform .3s;font-size:11px;flex-shrink:0}
+.r-peek-btn.is-open .arrow{transform:rotate(90deg)}
 .r-peek-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
   color:var(--fg3);margin:16px 0 12px;display:none}
-.r-peek.open .r-peek-label{display:block}
+.r-peek.is-open .r-peek-label{display:block}
 .r-peek-text{font-family:var(--serif);font-size:17px;line-height:1.75;color:var(--fg2);
-  max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.32,.72,0,1),opacity .3s;opacity:0}
-.r-peek.open .r-peek-text{max-height:5000px;opacity:1}
+  max-height:0;overflow:hidden;transition:max-height .6s cubic-bezier(.32,.72,0,1),opacity .4s;opacity:0}
+.r-peek.is-open .r-peek-text{max-height:8000px;opacity:1}
 
-/* Ensō decoration */
-.r-enso{width:60px;height:60px;margin:48px auto 0;opacity:.04;
-  border:2.5px solid var(--fg);border-radius:50%;border-top-color:transparent;transform:rotate(-30deg)}
+/* ═══ ENSŌ CEREMONY ═══ */
+.r-ceremony{margin-top:56px;display:flex;flex-direction:column;align-items:center;
+  padding:20px 0 40px;opacity:0;transition:opacity .8s ease;min-height:200px}
+.r-ceremony.visible{opacity:1}
+
+.enso-wrap{position:relative;width:120px;height:120px;cursor:pointer;
+  -webkit-tap-highlight-color:transparent}
+.enso-svg{width:120px;height:120px}
+.enso-path{fill:none;stroke:var(--fg);stroke-width:3.5;stroke-linecap:round;
+  stroke-dasharray:300;stroke-dashoffset:300;opacity:.12;
+  transition:stroke-dashoffset 2.5s cubic-bezier(.25,.1,.25,1),opacity 1s ease}
+.enso-draw .enso-path{stroke-dashoffset:0;opacity:.15}
+
+/* Gold fill on "voorgedragen" */
+.enso-fill{fill:none;stroke:url(#ensoGold);stroke-width:5;stroke-linecap:round;
+  stroke-dasharray:300;stroke-dashoffset:300;opacity:0;
+  transition:stroke-dashoffset 1.5s cubic-bezier(.32,.72,0,1),opacity .5s ease}
+.enso-used .enso-fill{stroke-dashoffset:0;opacity:1}
+
+/* Glow on used */
+.enso-glow{fill:none;stroke:var(--gold2);stroke-width:8;stroke-linecap:round;
+  stroke-dasharray:300;stroke-dashoffset:300;opacity:0;filter:blur(8px);
+  transition:stroke-dashoffset 1.8s cubic-bezier(.32,.72,0,1),opacity .8s ease}
+.enso-used .enso-glow{stroke-dashoffset:0;opacity:.3}
+
+/* Ripple on tap */
+.enso-ripple{position:absolute;inset:-20px;border:2px solid var(--gold2);border-radius:50%;
+  opacity:0;transform:scale(.5);pointer-events:none}
+@keyframes ripple{0%{opacity:.6;transform:scale(.7)}100%{opacity:0;transform:scale(1.5)}}
+.enso-ripple.pop{animation:ripple .8s ease-out}
+
+/* Date and hint */
+.enso-date{font-size:11px;color:var(--fg3);margin-top:14px;font-variant-numeric:tabular-nums;
+  opacity:0;transition:opacity .5s ease .5s;letter-spacing:.5px}
+.enso-draw .enso-date{opacity:1}
+.enso-hint{font-size:11px;color:var(--fg3);margin-top:6px;opacity:0;
+  transition:opacity .5s ease 1.5s;font-style:italic}
+.enso-draw .enso-hint{opacity:.6}
+.enso-used .enso-hint{opacity:0!important}
+.enso-used-label{font-size:11px;font-weight:600;color:var(--gold2);margin-top:6px;
+  opacity:0;transition:opacity .5s ease .3s;letter-spacing:.5px}
+.enso-used .enso-used-label{opacity:1}
 
 /* ═══ SCROLL TOP ═══ */
 .totop{position:fixed;bottom:calc(20px + var(--sb));right:20px;z-index:50;
@@ -229,7 +281,7 @@ input{font-family:inherit}
 .totop.show{opacity:1;transform:scale(1);pointer-events:auto}
 .totop:active{transform:scale(.85)}
 
-/* ═══ ANIMATIONS ═══ */
+/* ═══ ANIM ═══ */
 @keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .card{animation:up .3s ease both}
 .card:nth-child(1){animation-delay:0s}.card:nth-child(2){animation-delay:.02s}
@@ -242,28 +294,25 @@ input{font-family:inherit}
 </head>
 <body>
 
-<!-- Gradient def for ring -->
 <svg width="0" height="0" style="position:absolute">
   <defs>
     <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="var(--accent)"/>
-      <stop offset="100%" stop-color="var(--accent2)"/>
+      <stop offset="0%" stop-color="var(--accent)"/><stop offset="100%" stop-color="var(--accent2)"/>
+    </linearGradient>
+    <linearGradient id="ensoGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F0DEB8"/><stop offset="50%" stop-color="#C9A96E"/><stop offset="100%" stop-color="#8B6F47"/>
     </linearGradient>
   </defs>
 </svg>
 
-<nav class="nav">
-  <div class="nav-row">
-    <div class="nav-logo">
-      <svg viewBox="0 0 100 100" fill="none">
-        <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#E8D5B0"/><stop offset="100%" stop-color="#8B6F47"/></linearGradient></defs>
-        <path d="M50 15C30.7 15 15 30.7 15 50s15.7 35 35 35 35-15.7 35-35" stroke="url(#lg)" stroke-width="6" stroke-linecap="round"/>
-      </svg>
-    </div>
-    <span class="nav-t">Zen 101</span>
-    <button class="nav-shuffle" id="shuffleBtn" title="Willekeurig verhaal">🎲</button>
-  </div>
-</nav>
+<nav class="nav"><div class="nav-row">
+  <div class="nav-logo"><svg viewBox="0 0 100 100" fill="none">
+    <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#E8D5B0"/><stop offset="100%" stop-color="#8B6F47"/></linearGradient></defs>
+    <path d="M50 15C30.7 15 15 30.7 15 50s15.7 35 35 35 35-15.7 35-35" stroke="url(#lg)" stroke-width="6" stroke-linecap="round"/>
+  </svg></div>
+  <span class="nav-t">Zen 101</span>
+  <button class="nav-shuffle" id="shuffleBtn">🎲</button>
+</div></nav>
 
 <section class="hero">
   <div class="hero-bg">禅</div>
@@ -272,38 +321,28 @@ input{font-family:inherit}
 </section>
 
 <div class="prog"><div class="prog-card">
-  <div class="ring">
-    <svg width="48" height="48" viewBox="0 0 48 48">
-      <circle class="ring-bg" cx="24" cy="24" r="20"/>
-      <circle class="ring-f" id="ring" cx="24" cy="24" r="20" stroke-dasharray="125.66" stroke-dashoffset="125.66"/>
-    </svg>
-    <div class="ring-t" id="ringT">0%</div>
-  </div>
-  <div class="prog-info">
-    <div class="prog-n" id="progN">0 van 101 gelezen</div>
-    <div class="prog-d" id="progD">Begin je reis</div>
-  </div>
+  <div class="ring"><svg width="48" height="48" viewBox="0 0 48 48">
+    <circle class="ring-bg" cx="24" cy="24" r="20"/>
+    <circle class="ring-f" id="ring" cx="24" cy="24" r="20" stroke-dasharray="125.66" stroke-dashoffset="125.66"/>
+  </svg><div class="ring-t" id="ringT">0%</div></div>
+  <div class="prog-info"><div class="prog-n" id="progN">0 van 101</div><div class="prog-d" id="progD">Begin je reis</div></div>
   <button class="today-btn" id="todayBtn">Koan van de dag</button>
 </div></div>
 
-<div class="srch">
-  <span class="srch-i">⌕</span>
-  <input type="search" placeholder="Zoek op titel, tekst of thema…" id="search" autocomplete="off">
-</div>
+<div class="srch"><span class="srch-i">⌕</span>
+  <input type="search" placeholder="Zoek op titel, tekst of thema…" id="search" autocomplete="off"></div>
 
 <div class="lang">
   <span class="lang-label">Taal</span>
-  <label class="toggle-wrap">
-    <input type="checkbox" class="toggle-input" id="langToggle">
-    <div class="toggle-track"></div>
-    <div class="toggle-thumb"></div>
-  </label>
+  <label class="toggle-wrap"><input type="checkbox" class="toggle-input" id="langToggle">
+    <div class="toggle-track"></div><div class="toggle-thumb"></div></label>
   <span class="lang-val" id="langVal">English</span>
 </div>
 
 <div class="tags" id="tagsBar">
   <button class="tag on" data-tag="all">Alle<span class="tc">101</span></button>
   <button class="tag" data-tag="unread">Ongelezen</button>
+  <button class="tag" data-tag="used">Voorgedragen</button>
   <button class="tag" data-tag="bookmarked">★ Favorieten</button>
   <button class="tag" data-tag="wijsheid">Wijsheid<span class="tc">30</span></button>
   <button class="tag" data-tag="meester">Meester<span class="tc">25</span></button>
@@ -345,28 +384,65 @@ const TL={wijsheid:'Wijsheid',meester:'Meester & Leerling',humor:'Humor',kracht:
 
 // State
 let isNL=localStorage.getItem('z-nl')==='1';
-let rd=new Set(JSON.parse(localStorage.getItem('z-rd')||'[]'));
-let bm=new Set(JSON.parse(localStorage.getItem('z-bm')||'[]'));
-let tag='all',q='',cur=null;
+let rdSet=new Set(JSON.parse(localStorage.getItem('z-rd')||'[]'));
+let usSet=new Set(JSON.parse(localStorage.getItem('z-us')||'[]'));
+let bmSet=new Set(JSON.parse(localStorage.getItem('z-bm')||'[]'));
+let dates=JSON.parse(localStorage.getItem('z-dt')||'{}');  // {storyN: {read:'2026-03-22', used:'2026-03-22'}}
+let scrollPos=JSON.parse(localStorage.getItem('z-sp')||'{}');
+let tagF='all',q='',cur=null,readTimer=null;
 
 const $=id=>document.getElementById(id);
-const save=()=>{localStorage.setItem('z-rd',JSON.stringify([...rd]));
-  localStorage.setItem('z-bm',JSON.stringify([...bm]));localStorage.setItem('z-nl',isNL?'1':'0')};
+const save=()=>{localStorage.setItem('z-rd',JSON.stringify([...rdSet]));
+  localStorage.setItem('z-us',JSON.stringify([...usSet]));
+  localStorage.setItem('z-bm',JSON.stringify([...bmSet]));
+  localStorage.setItem('z-dt',JSON.stringify(dates));
+  localStorage.setItem('z-sp',JSON.stringify(scrollPos));
+  localStorage.setItem('z-nl',isNL?'1':'0')};
 const t2h=t=>t.split('\n\n').map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
+const today=()=>new Date().toLocaleDateString('nl-NL',{day:'numeric',month:'short',year:'numeric'});
+const fmtDate=d=>d||'';
 
 // Progress
 function updProg(){
-  const n=rd.size,pct=Math.round(n/101*100),c=125.66;
+  const n=rdSet.size,pct=Math.round(n/101*100),c=125.66;
   $('ring').style.strokeDashoffset=c-c*n/101;
   $('ringT').textContent=pct+'%';
-  $('progN').textContent=`${n} van 101 gelezen`;
+  $('progN').textContent=`${n} van 101`;
   $('progD').textContent=n===0?'Begin je reis':n<10?'De reis begint…':n<50?'De weg ontvouwt zich':n<101?'Verlichting nadert':'円相 — De cirkel is rond';
 }
 
-// Lang toggle UI
-function updLang(){
-  $('langToggle').checked=isNL;
-  $('langVal').textContent=isNL?'Nederlands':'English';
+function updLang(){$('langToggle').checked=isNL;$('langVal').textContent=isNL?'Nederlands':'English'}
+
+// Mark as read
+function markRead(n){
+  if(rdSet.has(n))return;
+  rdSet.add(n);
+  if(!dates[n])dates[n]={};
+  dates[n].read=today();
+  save();
+  // Trigger ensō draw
+  const cer=document.querySelector('.r-ceremony');
+  if(cer)cer.classList.add('enso-draw');
+  updProg();
+}
+
+// Mark as used
+function markUsed(n){
+  if(!rdSet.has(n))markRead(n);
+  usSet.add(n);
+  if(!dates[n])dates[n]={};
+  dates[n].used=today();
+  save();
+  const cer=document.querySelector('.r-ceremony');
+  if(cer){
+    cer.classList.add('enso-used');
+    const rip=cer.querySelector('.enso-ripple');
+    if(rip){rip.classList.remove('pop');void rip.offsetWidth;rip.classList.add('pop')}
+    // Update used label
+    const ul=cer.querySelector('.enso-used-label');
+    if(ul)ul.textContent='Voorgedragen · '+today();
+  }
+  render();
 }
 
 // Render list
@@ -376,17 +452,19 @@ function render(){
     s.en.toLowerCase().includes(ql)||s.nl.toLowerCase().includes(ql)||
     s.e.toLowerCase().includes(ql)||s.d.toLowerCase().includes(ql)||
     String(s.n).includes(ql)||s.t.some(t=>(TL[t]||t).toLowerCase().includes(ql)))}
-  if(tag==='unread')items=items.filter(s=>!rd.has(s.n));
-  else if(tag==='bookmarked')items=items.filter(s=>bm.has(s.n));
-  else if(tag!=='all')items=items.filter(s=>s.t.includes(tag));
+  if(tagF==='unread')items=items.filter(s=>!rdSet.has(s.n));
+  else if(tagF==='bookmarked')items=items.filter(s=>bmSet.has(s.n));
+  else if(tagF==='used')items=items.filter(s=>usSet.has(s.n));
+  else if(tagF!=='all')items=items.filter(s=>s.t.includes(tagF));
 
   const el=$('list');
   if(!items.length){el.innerHTML=`<div class="empty"><div class="empty-ico">🍃</div><div class="empty-t">Geen verhalen gevonden</div></div>`;return}
 
   el.innerHTML=items.map(s=>{
-    const title=isNL?s.nl:s.en;
-    const sub=isNL?s.en:s.nl;
-    return`<div class="card${rd.has(s.n)?' read':''}${bm.has(s.n)?' bm':''}" data-n="${s.n}">
+    const title=isNL?s.nl:s.en, sub=isNL?s.en:s.nl;
+    const isRead=rdSet.has(s.n), isUsed=usSet.has(s.n), isBm=bmSet.has(s.n);
+    const dt=dates[s.n];
+    return`<div class="card${isRead?' read':''}${isUsed?' used':''}${isBm?' bm':''}" data-n="${s.n}">
       <div class="card-bar"></div>
       <div class="card-inner">
         <div class="card-n">${s.n}</div>
@@ -396,6 +474,7 @@ function render(){
           <div class="card-row">
             <span class="card-min">${s.m} min</span>
             ${s.t.map(t=>`<span class="card-tg">${TL[t]||t}</span>`).join('')}
+            ${isUsed&&dt?.used?`<span class="card-date">✓ ${dt.used}</span>`:''}
           </div>
         </div>
       </div>
@@ -406,25 +485,30 @@ function render(){
 }
 
 // Open story
-function open(n){
-  const s=S.find(x=>x.n===n);if(!s)return;cur=s;
-  rd.add(s.n);save();
+function openStory(n){
+  const s=S.find(x=>x.n===n);if(!s)return;
 
-  const title=isNL?s.nl:s.en;
-  const sub=isNL?s.en:s.nl;
-  const mainText=isNL?s.d:s.e;
-  const altText=isNL?s.e:s.d;
+  // Save scroll of previous story
+  if(cur){scrollPos[cur.n]=$('reader').scrollTop;save()}
+
+  cur=s;
+  clearTimeout(readTimer);
+
+  const title=isNL?s.nl:s.en, sub=isNL?s.en:s.nl;
+  const mainText=isNL?s.d:s.e, altText=isNL?s.e:s.d;
   const altLabel=isNL?'English (origineel)':'Nederlandse vertaling';
+  const isRead=rdSet.has(s.n), isUsed=usSet.has(s.n);
+  const dt=dates[s.n]||{};
 
   $('rT').textContent=`${s.n}. ${title}`;
-  $('rBm').textContent=bm.has(s.n)?'★':'☆';
-  $('rPrev').disabled=s.n<=1;
-  $('rNext').disabled=s.n>=101;
+  $('rBm').textContent=bmSet.has(s.n)?'★':'☆';
+  $('rPrev').disabled=s.n<=1;$('rNext').disabled=s.n>=101;
 
   $('rBody').innerHTML=`
-    <div class="r-num">${s.n}</div>
+    <div class="r-num-wrap"><div class="r-num">${s.n}</div></div>
     <div class="r-h1">${title}</div>
     <div class="r-h2">${sub}</div>
+    <div class="r-ink"></div>
     <div class="r-meta">
       ${s.t.map(t=>`<span class="r-tag">${TL[t]||t}</span>`).join('')}
       <span class="r-min">${s.m} min</span>
@@ -437,66 +521,118 @@ function open(n){
       <div class="r-peek-label">${isNL?'ENGLISH':'NEDERLANDS'}</div>
       <div class="r-peek-text">${t2h(altText)}</div>
     </div>
-    <div class="r-enso"></div>`;
+    <div class="r-ceremony${isRead?' enso-draw visible':''}${isUsed?' enso-used':''}" id="ceremony">
+      <div class="enso-wrap" id="ensoTap">
+        <svg class="enso-svg" viewBox="0 0 120 120">
+          <path class="enso-glow" d="M60 12C33.5 12 12 33.5 12 60s21.5 48 48 48 48-21.5 48-48"/>
+          <path class="enso-path" d="M60 12C33.5 12 12 33.5 12 60s21.5 48 48 48 48-21.5 48-48"/>
+          <path class="enso-fill" d="M60 12C33.5 12 12 33.5 12 60s21.5 48 48 48 48-21.5 48-48"/>
+        </svg>
+        <div class="enso-ripple"></div>
+      </div>
+      <div class="enso-date">${isRead?fmtDate(dt.read):''}</div>
+      <div class="enso-hint">${isUsed?'':'tik voor voorgedragen'}</div>
+      <div class="enso-used-label">${isUsed?'Voorgedragen · '+fmtDate(dt.used):''}</div>
+    </div>`;
 
   // Peek toggle
-  $('peekBtn').addEventListener('click',()=>{
-    $('peek').classList.toggle('open');
-    $('peekBtn').classList.toggle('open');
-  });
+  $('peekBtn').onclick=()=>{$('peek').classList.toggle('is-open');$('peekBtn').classList.toggle('is-open')};
 
+  // Ensō tap → mark as used
+  $('ensoTap').onclick=()=>{if(rdSet.has(s.n))markUsed(s.n)};
+
+  // Open reader
   $('reader').classList.add('open');
-  $('reader').scrollTop=0;
   document.body.style.overflow='hidden';
+
+  // Restore scroll position or go to top
+  const saved=scrollPos[s.n];
+  if(saved&&!isRead){
+    requestAnimationFrame(()=>$('reader').scrollTop=saved);
+  } else {
+    $('reader').scrollTop=0;
+  }
+
+  // Scroll-based read detection via IntersectionObserver
+  if(!isRead){
+    const cer=$('ceremony');
+    const obs=new IntersectionObserver((entries)=>{
+      if(entries[0].isIntersecting){
+        cer.classList.add('visible');
+        // Start 3 second countdown once ceremony is visible
+        readTimer=setTimeout(()=>{markRead(s.n);render()},3000);
+        obs.disconnect();
+      }
+    },{threshold:0.3});
+    obs.observe(cer);
+
+    // Also: 45 sec backup timer
+    const backup=setTimeout(()=>{if(!rdSet.has(s.n)){markRead(s.n);render()}},45000);
+    // Store for cleanup
+    cer._backup=backup;cer._obs=obs;
+  } else {
+    $('ceremony').classList.add('visible');
+  }
+}
+
+function closeReader(){
+  if(cur){
+    scrollPos[cur.n]=$('reader').scrollTop;save();
+    clearTimeout(readTimer);
+    const cer=$('ceremony');
+    if(cer?._backup)clearTimeout(cer._backup);
+    if(cer?._obs)cer._obs.disconnect();
+  }
+  $('reader').classList.remove('open');
+  document.body.style.overflow='';
+  cur=null;
   render();
 }
 
-function close(){$('reader').classList.remove('open');document.body.style.overflow='';cur=null}
-
-function random(){
-  const unrd=S.filter(s=>!rd.has(s.n));
+function randomStory(){
+  const unrd=S.filter(s=>!rdSet.has(s.n));
   const pool=unrd.length?unrd:S;
-  open(pool[Math.floor(Math.random()*pool.length)].n);
+  openStory(pool[Math.floor(Math.random()*pool.length)].n);
 }
 
 // Events
-$('list').addEventListener('click',e=>{const c=e.target.closest('.card');if(c)open(+c.dataset.n)});
-$('rBack').addEventListener('click',close);
-$('rPrev').addEventListener('click',()=>{if(cur&&cur.n>1)open(cur.n-1)});
-$('rNext').addEventListener('click',()=>{if(cur&&cur.n<101)open(cur.n+1)});
-$('rBm').addEventListener('click',()=>{if(!cur)return;bm.has(cur.n)?bm.delete(cur.n):bm.add(cur.n);
-  $('rBm').textContent=bm.has(cur.n)?'★':'☆';save()});
-$('todayBtn').addEventListener('click',random);
-$('shuffleBtn').addEventListener('click',random);
-
+$('list').addEventListener('click',e=>{const c=e.target.closest('.card');if(c)openStory(+c.dataset.n)});
+$('rBack').addEventListener('click',closeReader);
+$('rPrev').addEventListener('click',()=>{if(cur&&cur.n>1)openStory(cur.n-1)});
+$('rNext').addEventListener('click',()=>{if(cur&&cur.n<101)openStory(cur.n+1)});
+$('rBm').addEventListener('click',()=>{if(!cur)return;bmSet.has(cur.n)?bmSet.delete(cur.n):bmSet.add(cur.n);
+  $('rBm').textContent=bmSet.has(cur.n)?'★':'☆';save()});
+$('todayBtn').addEventListener('click',randomStory);
+$('shuffleBtn').addEventListener('click',randomStory);
 $('langToggle').addEventListener('change',e=>{isNL=e.target.checked;save();updLang();
-  if(cur)open(cur.n);else render()});
-
+  if(cur)openStory(cur.n);else render()});
 $('search').addEventListener('input',e=>{q=e.target.value;render()});
-
 $('tagsBar').addEventListener('click',e=>{const p=e.target.closest('.tag');if(!p)return;
   document.querySelectorAll('.tag').forEach(t=>t.classList.remove('on'));
-  p.classList.add('on');tag=p.dataset.tag;render()});
+  p.classList.add('on');tagF=p.dataset.tag;render()});
 
 let st;window.addEventListener('scroll',()=>{clearTimeout(st);
   st=setTimeout(()=>$('toTop').classList.toggle('show',scrollY>400),50)},{passive:true});
 $('toTop').addEventListener('click',()=>scrollTo({top:0,behavior:'smooth'}));
 
+// Save reader scroll position on scroll
+$('reader').addEventListener('scroll',()=>{
+  if(cur&&!rdSet.has(cur.n)){scrollPos[cur.n]=$('reader').scrollTop;save()}
+},{passive:true});
+
 // Swipe back
 let tx=0;const rr=$('reader');
 rr.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
-rr.addEventListener('touchend',e=>{if(e.changedTouches[0].clientX-tx>80&&tx<40)close()},{passive:true});
+rr.addEventListener('touchend',e=>{if(e.changedTouches[0].clientX-tx>80&&tx<40)closeReader()},{passive:true});
 
 // Keyboard
 document.addEventListener('keydown',e=>{if(rr.classList.contains('open')){
-  if(e.key==='Escape')close();
-  if(e.key==='ArrowLeft'&&cur?.n>1)open(cur.n-1);
-  if(e.key==='ArrowRight'&&cur?.n<101)open(cur.n+1)}});
+  if(e.key==='Escape')closeReader();
+  if(e.key==='ArrowLeft'&&cur?.n>1)openStory(cur.n-1);
+  if(e.key==='ArrowRight'&&cur?.n<101)openStory(cur.n+1)}});
 
 // Init
 updLang();render();
-
-// Register service worker
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 </script>
 </body>
