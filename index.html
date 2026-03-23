@@ -132,9 +132,6 @@ input{font-family:inherit}
 .card.read .card-bar{opacity:1}
 .card.used .card-bar{background:linear-gradient(180deg,var(--gold1),var(--gold3))}
 .card-inner{flex:1;padding:14px 0 14px 16px;display:flex;gap:14px;align-items:flex-start;min-width:0}
-.card-ico{font-size:22px;line-height:1;flex-shrink:0;opacity:.7;filter:grayscale(.3);
-  width:28px;text-align:center}
-.card.used .card-ico{opacity:1;filter:grayscale(0)}
 .card-n{font-family:var(--disp);font-size:26px;font-weight:700;color:var(--accent);opacity:.2;
   line-height:1;min-width:32px;text-align:right;font-variant-numeric:tabular-nums;padding-top:2px}
 .card.read .card-n{opacity:.45}
@@ -557,10 +554,6 @@ const TL={wijsheid:'Wijsheid',meester:'Meester & Leerling',humor:'Humor',kracht:
   eenvoud:'Eenvoud',paradox:'Paradox',compassie:'Compassie',verlichting:'Verlichting',
   dood:'Vergankelijkheid',kunst:'Kunst & Meesterschap',gehechtheid:'Gehechtheid',
   ego:'Ego',stilte:'Stilte',natuur:'Natuur'};
-const TI={wijsheid:'🧠',meester:'🎎',humor:'😄',kracht:'⚡',
-  eenvoud:'🍃',paradox:'🔄',compassie:'💛',verlichting:'✨',
-  dood:'🌅',kunst:'🎨',gehechtheid:'🔗',ego:'🪞',stilte:'🧘',natuur:'🌿'};
-function tagIcon(tags){return tags.length?TI[tags[0]]||'📿':'📿'}
 
 // ═══ MUMONKAN — 48 Koans of The Gateless Gate ═══
 const K=[
@@ -702,7 +695,6 @@ function render(){
     return`<div class="card${isRead?' read':''}${isUsed?' used':''}${isBm?' bm':''}" data-n="${s.n}">
       <div class="card-bar"></div>
       <div class="card-inner">
-        <div class="card-ico">${tagIcon(s.t)}</div>
         <div class="card-n">${s.n}</div>
         <div class="card-txt">
           <div class="card-h">${title}</div>
