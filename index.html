@@ -1020,7 +1020,6 @@ function randomStory(){
 function updCollUI(){
   document.querySelectorAll('.coll-tab').forEach(t=>t.classList.toggle('active',t.dataset.c===coll));
   $('heroSub').textContent=coll==='koans'?'48 Koans — Mumonkan':'101 Zen Stories — Reps & Senzaki';
-  $('todayBtn').textContent=coll==='koans'?'Koan van de dag':'Verhaal van de dag';
   // Update tag counts for active collection
   const all=src();
   document.querySelectorAll('.tag[data-tag]').forEach(t=>{
@@ -1055,7 +1054,6 @@ $('rLang').addEventListener('click',()=>{
   alt.style.display=showing?'none':'block';
   $('rLang').textContent=showing?(isNL?'EN':'NL'):'✕';
 });
-$('todayBtn').addEventListener('click',randomStory);
 $('shuffleBtn').addEventListener('click',randomStory);
 $('langToggle').addEventListener('change',e=>{isNL=e.target.checked;save();updLang();
   if(cur)openStory(cur.n);else render()});
