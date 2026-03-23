@@ -157,6 +157,10 @@ input{font-family:inherit}
 
 
 
+/* ═══ WIND SCATTER ═══ */
+.wind-canvas{position:fixed;inset:0;z-index:250;pointer-events:none;opacity:0;
+  transition:opacity .1s ease}
+.wind-canvas.active{opacity:1}
 /* ═══ SWIPE TRANSITION FX ═══ */
 .swipe-fx{position:fixed;inset:0;z-index:50;pointer-events:none;opacity:0;
   transition:opacity .15s ease}
@@ -424,6 +428,7 @@ input{font-family:inherit}
   </div>
 </div>
 
+<canvas class="wind-canvas" id="windCanvas"></canvas>
 <div class="sumi-overlay" id="sumiOverlay">
   <div class="sumi-bg"></div>
   <canvas class="sparkle-canvas" id="sparkleCanvas"></canvas>
@@ -747,7 +752,7 @@ function openStory(n){
 
   $('rT').textContent=`${s.n}. ${title}`;
   $('rBm').textContent=bmSet.has(s.n)?'★':'☆';
-  $('rLang').textContent=isNL?'EN':'NL';
+  $('rLang').textContent=isNL?'NL':'EN';
 
   $('rBody').innerHTML=`
     <div class="r-hero">
@@ -1102,6 +1107,123 @@ function burstEnlightenment(){
   requestAnimationFrame(draw);
 }
 
+
+// ═══ WIND SCATTER CLOSE ═══
+function windScatterClose(){
+  const c=$('windCanvas');if(!c)return;
+  c.classList.add('active');
+  const dpr=window.devicePixelRatio||1;
+  const W=window.innerWidth,H=window.innerHeight;
+  c.width=W*dpr;c.height=H*dpr;
+  const ctx=c.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  const isDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+  const serif=getComputedStyle(document.documentElement).getPropertyValue('--serif');
+
+  // Collect text fragments from reader
+  const body=$('rBody');
+  const frags=[];
+  if(body){
+    const words=(body.innerText||'').split(/\s+/).filter(w=>w.length>0);
+    const n=Math.min(40,words.length);
+    const step=Math.max(1,Math.floor(words.length/n));
+    for(let i=0,j=0;i<words.length&&j<n;i+=step,j++){
+      const row=j%9;
+      frags.push({
+        text:words[i].substring(0,14),
+        x:15+Math.random()*(W*.5),
+        y:50+row*(H/9)+(Math.random()-.5)*30,
+        vx:6+Math.random()*10,
+        vy:(Math.random()-.5)*6,
+        rot:0,
+        vrot:(Math.random()-.5)*8,
+        alpha:.9,
+        size:9+Math.random()*7,
+        delay:Math.random()*.25
+      });
+    }
+  }
+
+  // Dust particles — like paper debris
+  const dust=[];
+  for(let i=0;i<50;i++){
+    dust.push({
+      x:Math.random()*W*.6,
+      y:Math.random()*H,
+      vx:6+Math.random()*12,
+      vy:(Math.random()-.5)*6,
+      r:.5+Math.random()*2.5,
+      alpha:.5+Math.random()*.5,
+      life:1.2+Math.random(),
+      maxLife:1.2+Math.random(),
+      type:Math.random()>.6?'line':'dot'
+    });
+  }
+
+  // Slide reader to right then close
+  const reader=$('reader');
+  reader.style.transition='transform .45s cubic-bezier(.4,0,1,1)';
+  reader.style.transform='translateX(105%)';
+  setTimeout(()=>{
+    reader.style.transition='none';
+    reader.style.transform='translateY(100%)';
+    closeReader();
+    requestAnimationFrame(()=>{
+      reader.style.transition='transform .45s cubic-bezier(.22,1,.36,1)';
+    });
+  },460);
+
+  let last=0,elapsed=0;
+  function frame(t){
+    const dt=last?Math.min((t-last)/1000,.05):.016;
+    last=t;elapsed+=dt;
+    ctx.clearRect(0,0,W,H);
+    let alive=false;
+
+    // Flying text
+    frags.forEach(f=>{
+      if(elapsed<f.delay)return;
+      f.x+=f.vx;
+      f.vy+=(Math.random()-.5)*.4;
+      f.y+=f.vy;
+      f.rot+=f.vrot;
+      f.vrot*=.98;
+      f.alpha-=dt*.7;
+      if(f.alpha<=0||f.x>W+100)return;
+      alive=true;
+      ctx.save();
+      ctx.translate(f.x,f.y);
+      ctx.rotate(f.rot*Math.PI/180);
+      ctx.globalAlpha=Math.max(0,f.alpha);
+      ctx.font=f.size+'px '+serif;
+      ctx.fillStyle=isDark?'rgba(245,245,247,.5)':'rgba(29,29,31,.4)';
+      ctx.fillText(f.text,0,0);
+      ctx.restore();
+    });
+
+    // Dust
+    dust.forEach(p=>{
+      p.life-=dt;if(p.life<=0)return;
+      alive=true;
+      p.x+=p.vx;p.y+=p.vy;
+      p.vy+=(Math.random()-.5)*.6;
+      p.vx*=.99;
+      const a=(p.life/p.maxLife)*p.alpha;
+      if(p.type==='line'){
+        ctx.strokeStyle=isDark?'rgba(180,160,130,'+(a*.35)+')':'rgba(80,60,40,'+(a*.25)+')';
+        ctx.lineWidth=.5;
+        ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x-p.vx*2,p.y-p.vy*2);ctx.stroke();
+      } else {
+        ctx.fillStyle=isDark?'rgba(180,160,130,'+(a*.4)+')':'rgba(80,60,40,'+(a*.3)+')';
+        ctx.beginPath();ctx.arc(p.x,p.y,p.r*(p.life/p.maxLife),0,Math.PI*2);ctx.fill();
+      }
+    });
+
+    if(alive&&elapsed<3)requestAnimationFrame(frame);
+    else{ctx.clearRect(0,0,W,H);c.classList.remove('active')}
+  }
+  requestAnimationFrame(frame);
+}
 function randomStory(){
   const all=src(),unrd=all.filter(s=>!rdSet.has(s.n));
   const pool=unrd.length?unrd:all;
@@ -1186,124 +1308,19 @@ $('rPage1').addEventListener('scroll',()=>{
   if(cur&&!rdSet.has(cur.n)){scrollPos[cur.n]=$('rPage1').scrollTop;save()}
 },{passive:true});
 
-// Swipe right to close reader — with particle FX
-let tx=0,ty=0,tmx=0,swiping=false;
+// Swipe right to close reader — wind scatter
+let tx=0,ty=0;
 $('rPage1').addEventListener('touchstart',e=>{
-  tx=e.touches[0].clientX;ty=e.touches[0].clientY;tmx=tx;swiping=false;
-},{passive:true});
-$('rPage1').addEventListener('touchmove',e=>{
-  tmx=e.touches[0].clientX;
-  const dx=tmx-tx;
-  const dy=Math.abs(e.touches[0].clientY-ty);
-  if(dx>30&&dy<60&&!swiping){swiping=true}
-  if(swiping){
-    // Live glow at left edge proportional to swipe distance
-    const prog=Math.min(dx/200,1);
-    showCloseGlow(prog);
-  }
+  tx=e.touches[0].clientX;ty=e.touches[0].clientY;
 },{passive:true});
 $('rPage1').addEventListener('touchend',e=>{
   const dx=e.changedTouches[0].clientX-tx;
   const dy=Math.abs(e.changedTouches[0].clientY-ty);
-  if(dx>80&&dy<80){
-    burstCloseParticles();
-    hideCloseGlow();
-    setTimeout(closeReader,250);
-  } else {
-    hideCloseGlow();
-  }
-  swiping=false;
+  if(dx>80&&dy<80) windScatterClose();
 },{passive:true});
 
-// Close FX — reuse swipeFx canvas
-function showCloseGlow(prog){
-  const c=$('swipeFx');if(!c)return;
-  c.classList.add('active');
-  const ctx=c.getContext('2d');
-  const dpr=window.devicePixelRatio||1;
-  const W=window.innerWidth,H=window.innerHeight;
-  c.width=W*dpr;c.height=H*dpr;
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-  const isDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
-
-  // Left edge glow
-  const gw=120*prog;
-  const g=ctx.createLinearGradient(0,0,gw*2,0);
-  if(isDark){
-    g.addColorStop(0,'rgba(255,230,170,'+(prog*.4)+')');
-    g.addColorStop(.5,'rgba(201,169,110,'+(prog*.2)+')');
-    g.addColorStop(1,'rgba(201,169,110,0)');
-  } else {
-    g.addColorStop(0,'rgba(201,169,110,'+(prog*.3)+')');
-    g.addColorStop(.5,'rgba(139,111,71,'+(prog*.15)+')');
-    g.addColorStop(1,'rgba(139,111,71,0)');
-  }
-  ctx.fillStyle=g;
-  ctx.fillRect(0,0,gw*2,H);
-
-  // Bright line at left edge
-  const la=prog*.6;
-  ctx.fillStyle=isDark?'rgba(255,240,200,'+la+')':'rgba(220,190,130,'+la+')';
-  ctx.fillRect(0,0,2,H);
-}
-function hideCloseGlow(){
-  const c=$('swipeFx');if(!c)return;
-  const ctx=c.getContext('2d');
-  ctx.clearRect(0,0,c.width,c.height);
-  c.classList.remove('active');
-}
-function burstCloseParticles(){
-  const c=$('swipeFx');if(!c)return;
-  c.classList.add('active');
-  const ctx=c.getContext('2d');
-  const dpr=window.devicePixelRatio||1;
-  const W=window.innerWidth,H=window.innerHeight;
-  c.width=W*dpr;c.height=H*dpr;
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-  const isDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
-
-  const pts=[];
-  for(let i=0;i<50;i++){
-    const a=Math.PI*(Math.random()-.5)*.7;
-    const spd=2+Math.random()*6;
-    pts.push({
-      x:8+Math.random()*20,y:H*.08+Math.random()*H*.84,
-      vx:Math.cos(a)*spd,vy:Math.sin(a)*spd,
-      r:Math.random()*2.5+1,
-      life:.7+Math.random()*1,maxLife:.7+Math.random()*1,
-      spark:Math.random()>.5
-    });
-  }
-  let last=0;
-  function draw(t){
-    const dt=last?Math.min((t-last)/1000,.05):.016;
-    last=t;
-    ctx.clearRect(0,0,W,H);
-    let alive=false;
-    pts.forEach(p=>{
-      p.life-=dt;if(p.life<=0)return;
-      alive=true;
-      p.x+=p.vx;p.y+=p.vy;
-      p.vx*=.97;p.vy*=.97;
-      const a=p.life/p.maxLife;
-      const al=a*a;
-      if(p.spark){
-        ctx.fillStyle=isDark?'rgba(255,245,220,'+Math.min(al*1.2,1)+')':'rgba(220,190,120,'+Math.min(al,.8)+')';
-        ctx.shadowColor=isDark?'rgba(255,220,150,'+(al*.8)+')':'rgba(201,169,110,'+(al*.6)+')';
-        ctx.shadowBlur=p.r*8;
-      } else {
-        ctx.fillStyle=isDark?'rgba(232,213,176,'+(al*.8)+')':'rgba(201,169,110,'+(al*.6)+')';
-        ctx.shadowColor=isDark?'rgba(201,169,110,'+(al*.6)+')':'rgba(139,111,71,'+(al*.4)+')';
-        ctx.shadowBlur=p.r*6;
-      }
-      ctx.beginPath();ctx.arc(p.x,p.y,p.r*(a*.5+.5),0,Math.PI*2);ctx.fill();
-      ctx.shadowBlur=0;
-    });
-    if(alive)requestAnimationFrame(draw);
-    else{ctx.clearRect(0,0,W,H);c.classList.remove('active')}
-  }
-  requestAnimationFrame(draw);
-}
+// (old close glow removed — replaced by wind scatter)
+// (old burst removed)
 
 // Essence page visibility animation on horizontal scroll
 $('rScroll').addEventListener('scroll',()=>{
