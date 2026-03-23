@@ -1094,14 +1094,124 @@ $('rPage1').addEventListener('scroll',()=>{
   if(cur&&!rdSet.has(cur.n)){scrollPos[cur.n]=$('rPage1').scrollTop;save()}
 },{passive:true});
 
-// Swipe right to close reader (from story page)
-let tx=0,ty=0;
-$('rPage1').addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY},{passive:true});
+// Swipe right to close reader — with particle FX
+let tx=0,ty=0,tmx=0,swiping=false;
+$('rPage1').addEventListener('touchstart',e=>{
+  tx=e.touches[0].clientX;ty=e.touches[0].clientY;tmx=tx;swiping=false;
+},{passive:true});
+$('rPage1').addEventListener('touchmove',e=>{
+  tmx=e.touches[0].clientX;
+  const dx=tmx-tx;
+  const dy=Math.abs(e.touches[0].clientY-ty);
+  if(dx>30&&dy<60&&!swiping){swiping=true}
+  if(swiping){
+    // Live glow at left edge proportional to swipe distance
+    const prog=Math.min(dx/200,1);
+    showCloseGlow(prog);
+  }
+},{passive:true});
 $('rPage1').addEventListener('touchend',e=>{
   const dx=e.changedTouches[0].clientX-tx;
   const dy=Math.abs(e.changedTouches[0].clientY-ty);
-  if(dx>80&&dy<80)closeReader()
+  if(dx>80&&dy<80){
+    burstCloseParticles();
+    hideCloseGlow();
+    setTimeout(closeReader,250);
+  } else {
+    hideCloseGlow();
+  }
+  swiping=false;
 },{passive:true});
+
+// Close FX — reuse swipeFx canvas
+function showCloseGlow(prog){
+  const c=$('swipeFx');if(!c)return;
+  c.classList.add('active');
+  const ctx=c.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  const W=window.innerWidth,H=window.innerHeight;
+  c.width=W*dpr;c.height=H*dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  const isDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+
+  // Left edge glow
+  const gw=120*prog;
+  const g=ctx.createLinearGradient(0,0,gw*2,0);
+  if(isDark){
+    g.addColorStop(0,'rgba(255,230,170,'+(prog*.4)+')');
+    g.addColorStop(.5,'rgba(201,169,110,'+(prog*.2)+')');
+    g.addColorStop(1,'rgba(201,169,110,0)');
+  } else {
+    g.addColorStop(0,'rgba(201,169,110,'+(prog*.3)+')');
+    g.addColorStop(.5,'rgba(139,111,71,'+(prog*.15)+')');
+    g.addColorStop(1,'rgba(139,111,71,0)');
+  }
+  ctx.fillStyle=g;
+  ctx.fillRect(0,0,gw*2,H);
+
+  // Bright line at left edge
+  const la=prog*.6;
+  ctx.fillStyle=isDark?'rgba(255,240,200,'+la+')':'rgba(220,190,130,'+la+')';
+  ctx.fillRect(0,0,2,H);
+}
+function hideCloseGlow(){
+  const c=$('swipeFx');if(!c)return;
+  const ctx=c.getContext('2d');
+  ctx.clearRect(0,0,c.width,c.height);
+  c.classList.remove('active');
+}
+function burstCloseParticles(){
+  const c=$('swipeFx');if(!c)return;
+  c.classList.add('active');
+  const ctx=c.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  const W=window.innerWidth,H=window.innerHeight;
+  c.width=W*dpr;c.height=H*dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  const isDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+
+  const pts=[];
+  for(let i=0;i<50;i++){
+    const a=Math.PI*(Math.random()-.5)*.7;
+    const spd=2+Math.random()*6;
+    pts.push({
+      x:8+Math.random()*20,y:H*.08+Math.random()*H*.84,
+      vx:Math.cos(a)*spd,vy:Math.sin(a)*spd,
+      r:Math.random()*2.5+1,
+      life:.7+Math.random()*1,maxLife:.7+Math.random()*1,
+      spark:Math.random()>.5
+    });
+  }
+  let last=0;
+  function draw(t){
+    const dt=last?Math.min((t-last)/1000,.05):.016;
+    last=t;
+    ctx.clearRect(0,0,W,H);
+    let alive=false;
+    pts.forEach(p=>{
+      p.life-=dt;if(p.life<=0)return;
+      alive=true;
+      p.x+=p.vx;p.y+=p.vy;
+      p.vx*=.97;p.vy*=.97;
+      const a=p.life/p.maxLife;
+      const al=a*a;
+      if(p.spark){
+        ctx.fillStyle=isDark?'rgba(255,245,220,'+Math.min(al*1.2,1)+')':'rgba(220,190,120,'+Math.min(al,.8)+')';
+        ctx.shadowColor=isDark?'rgba(255,220,150,'+(al*.8)+')':'rgba(201,169,110,'+(al*.6)+')';
+        ctx.shadowBlur=p.r*8;
+      } else {
+        ctx.fillStyle=isDark?'rgba(232,213,176,'+(al*.8)+')':'rgba(201,169,110,'+(al*.6)+')';
+        ctx.shadowColor=isDark?'rgba(201,169,110,'+(al*.6)+')':'rgba(139,111,71,'+(al*.4)+')';
+        ctx.shadowBlur=p.r*6;
+      }
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r*(a*.5+.5),0,Math.PI*2);ctx.fill();
+      ctx.shadowBlur=0;
+    });
+    if(alive)requestAnimationFrame(draw);
+    else{ctx.clearRect(0,0,W,H);c.classList.remove('active')}
+  }
+  requestAnimationFrame(draw);
+}
 
 // Essence page visibility animation on horizontal scroll
 $('rScroll').addEventListener('scroll',()=>{
