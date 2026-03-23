@@ -76,24 +76,6 @@ input{font-family:inherit}
   box-shadow:0 1px 4px rgba(0,0,0,.06),0 0 0 .5px var(--b)}
 .coll-tab .coll-n{font-size:11px;font-weight:400;opacity:.6;margin-left:3px}
 
-/* ═══ PROGRESS ═══ */
-.prog{max-width:600px;margin:16px auto 0;padding:0 24px}
-.prog-card{display:flex;align-items:center;gap:16px;padding:16px 18px;
-  background:var(--card);border-radius:var(--r);border:.5px solid var(--b);box-shadow:var(--sh)}
-.ring{position:relative;width:48px;height:48px;flex-shrink:0}
-.ring svg{transform:rotate(-90deg)}
-.ring-bg{fill:none;stroke:var(--b);stroke-width:3}
-.ring-f{fill:none;stroke:url(#ringGrad);stroke-width:3;stroke-linecap:round;
-  transition:stroke-dashoffset .8s cubic-bezier(.32,.72,0,1)}
-.ring-t{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  font-size:13px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
-.prog-info{flex:1}
-.prog-n{font-size:15px;font-weight:600}
-.prog-d{font-size:12px;color:var(--fg2);margin-top:1px}
-.today-btn{padding:9px 18px;border-radius:22px;font-size:13px;font-weight:600;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;
-  letter-spacing:.2px;box-shadow:0 2px 10px rgba(139,111,71,.3);transition:transform .15s}
-.today-btn:active{transform:scale(.93)}
 
 /* ═══ SEARCH ═══ */
 .srch{max-width:600px;margin:14px auto 0;padding:0 24px;position:relative}
@@ -164,6 +146,22 @@ input{font-family:inherit}
 .empty{text-align:center;padding:60px 20px;color:var(--fg2)}
 .empty-ico{font-size:44px;margin-bottom:12px;opacity:.3}
 .empty-t{font-family:var(--serif);font-size:17px}
+
+
+/* ═══ ESSENCE PARTICLES & GLOW ═══ */
+.ess-particles{position:absolute;inset:0;z-index:0;pointer-events:none}
+.ess-glow{position:absolute;width:300px;height:300px;border-radius:50%;
+  background:radial-gradient(circle,rgba(201,169,110,.12) 0%,transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-50%);z-index:0;
+  opacity:0;transition:opacity 2s ease;filter:blur(40px)}
+.r-page-ess.visible .ess-glow{opacity:1}
+.ess-wrap{position:relative;z-index:1}
+.ess-label{position:relative;z-index:1}
+.ess-text{position:relative;z-index:1}
+.ess-back{position:relative;z-index:1}
+@media(prefers-color-scheme:dark){
+  .ess-glow{background:radial-gradient(circle,rgba(201,169,110,.15) 0%,rgba(139,111,71,.05) 40%,transparent 70%)}
+}
 
 /* ═══ READER ═══ */
 .reader{position:fixed;inset:0;z-index:200;background:var(--bg);
@@ -326,14 +324,7 @@ input{font-family:inherit}
 <body>
 
 <svg width="0" height="0" style="position:absolute">
-  <defs>
-    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="var(--accent)"/><stop offset="100%" stop-color="var(--accent2)"/>
-    </linearGradient>
-    <linearGradient id="ensoGold" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#F0DEB8"/><stop offset="50%" stop-color="#C9A96E"/><stop offset="100%" stop-color="#8B6F47"/>
-    </linearGradient>
-  </defs>
+  
 </svg>
 
 <nav class="nav"><div class="nav-row">
@@ -354,15 +345,6 @@ input{font-family:inherit}
 <div class="coll"><div class="coll-tabs" id="collTabs">
   <button class="coll-tab active" data-c="stories">Verhalen<span class="coll-n">101</span></button>
   <button class="coll-tab" data-c="koans">Koans<span class="coll-n">48</span></button>
-</div></div>
-
-<div class="prog"><div class="prog-card">
-  <div class="ring"><svg width="48" height="48" viewBox="0 0 48 48">
-    <circle class="ring-bg" cx="24" cy="24" r="20"/>
-    <circle class="ring-f" id="ring" cx="24" cy="24" r="20" stroke-dasharray="125.66" stroke-dashoffset="125.66"/>
-  </svg><div class="ring-t" id="ringT">0%</div></div>
-  <div class="prog-info"><div class="prog-n" id="progN">0 van 101</div><div class="prog-d" id="progD">Begin je reis</div></div>
-  <button class="today-btn" id="todayBtn">Koan van de dag</button>
 </div></div>
 
 <div class="srch"><span class="srch-i">⌕</span>
@@ -410,6 +392,8 @@ input{font-family:inherit}
       <div class="r-body" id="rBody"></div>
     </div>
     <div class="r-page r-page-ess" id="rPage2">
+      <div class="ess-glow"></div>
+      <canvas class="ess-particles" id="essParticles"></canvas>
       <div class="ess-wrap">
         <svg class="ess-enso" viewBox="0 0 280 280" fill="none">
           <path d="M 185 62 A 100 100 0 1 1 82 75" stroke="var(--accent2)" stroke-width="24"
@@ -623,7 +607,7 @@ const K=[
 
 // State
 let coll=localStorage.getItem('z-coll')||'stories';
-let isNL=localStorage.getItem('z-nl')==='1';
+let isNL=localStorage.getItem('z-nl')!=='0';
 // Per-collection storage (stories=existing keys for backward compat)
 const CK={stories:['z-rd','z-us','z-bm','z-dt','z-sp'],
            koans:['z-rd-k','z-us-k','z-bm-k','z-dt-k','z-sp-k']};
@@ -652,13 +636,6 @@ const today=()=>new Date().toLocaleDateString('nl-NL',{day:'numeric',month:'shor
 const fmtDate=d=>d||'';
 
 // Progress
-function updProg(){
-  const tot=total(),n=rdSet.size,pct=Math.round(n/tot*100),c=125.66;
-  $('ring').style.strokeDashoffset=c-c*n/tot;
-  $('ringT').textContent=pct+'%';
-  $('progN').textContent=`${n} van ${tot}`;
-  $('progD').textContent=n===0?'Begin je reis':n<10?'De reis begint…':n<Math.ceil(tot/2)?'De weg ontvouwt zich':n<tot?'Verlichting nadert':'円相 — De cirkel is rond';
-}
 
 function updLang(){$('langToggle').checked=isNL;$('langVal').textContent=isNL?'Nederlands':'English'}
 
@@ -672,7 +649,7 @@ function markRead(n){
   // Trigger ensō draw
   const cer=document.querySelector('.r-ceremony');
   if(cer)cer.classList.add('enso-draw');
-  updProg();
+  
 }
 
 // Mark as used
@@ -730,7 +707,7 @@ function render(){
       <span class="card-star">★</span>
       <div class="card-end"><span class="card-chev">›</span></div>
     </div>`}).join('');
-  updProg();
+  
 }
 
 // Open story
@@ -800,7 +777,7 @@ function openStory(n){
 }
 
 let justRead=false;
-function closeReader(){
+function closeReader(){stopEssParticles();
   if(cur){
     scrollPos[cur.n]=$('rPage1').scrollTop;save();
     justRead=rdSet.has(cur.n);
@@ -1105,8 +1082,8 @@ $('rPage1').addEventListener('touchend',e=>{if(e.changedTouches[0].clientX-tx>80
 $('rScroll').addEventListener('scroll',()=>{
   const sl=$('rScroll').scrollLeft,w=$('rScroll').offsetWidth/2;
   const essPage=$('rPage2');
-  if(sl>w*.4)essPage.classList.add('visible');
-  else essPage.classList.remove('visible');
+  if(sl>w*.4){essPage.classList.add('visible');initEssParticles()}
+  else{essPage.classList.remove('visible');stopEssParticles()}
 },{passive:true});
 
 // Keyboard
@@ -1123,8 +1100,66 @@ $('sumiOverlay').addEventListener('click',()=>{
 
 // Init
 updLang();updCollUI();render();
+
+// ═══ ESSENCE PARTICLES ═══
+let essAnimId=null;
+function initEssParticles(){
+  const c=document.getElementById('essParticles');
+  if(!c)return;
+  const ctx=c.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  function resize(){c.width=c.offsetWidth*dpr;c.height=c.offsetHeight*dpr;ctx.scale(dpr,dpr)}
+  resize();
+  const W=()=>c.offsetWidth,H=()=>c.offsetHeight;
+  const particles=[];
+  const N=35;
+  for(let i=0;i<N;i++){
+    particles.push({
+      x:Math.random()*W(),y:Math.random()*H(),
+      vx:(Math.random()-.5)*.15,vy:-Math.random()*.3-.05,
+      r:Math.random()*1.5+.5,
+      a:Math.random()*.4+.1,
+      phase:Math.random()*Math.PI*2,
+      speed:Math.random()*.005+.002
+    });
+  }
+  function draw(t){
+    ctx.clearRect(0,0,W(),H());
+    const isDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+    particles.forEach(p=>{
+      p.x+=p.vx+Math.sin(t*p.speed+p.phase)*.15;
+      p.y+=p.vy;
+      if(p.y<-10){p.y=H()+10;p.x=Math.random()*W()}
+      if(p.x<-10)p.x=W()+10;
+      if(p.x>W()+10)p.x=-10;
+      const flicker=.5+.5*Math.sin(t*p.speed*3+p.phase);
+      const alpha=p.a*flicker;
+      if(isDark){
+        ctx.fillStyle='rgba(232,213,176,'+alpha+')';
+        // tiny glow
+        ctx.shadowColor='rgba(201,169,110,'+(alpha*.6)+')';
+        ctx.shadowBlur=p.r*4;
+      } else {
+        ctx.fillStyle='rgba(139,111,71,'+(alpha*.5)+')';
+        ctx.shadowColor='rgba(139,111,71,'+(alpha*.3)+')';
+        ctx.shadowBlur=p.r*3;
+      }
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fill();
+    });
+    ctx.shadowBlur=0;
+    essAnimId=requestAnimationFrame(draw);
+  }
+  if(essAnimId)cancelAnimationFrame(essAnimId);
+  essAnimId=requestAnimationFrame(draw);
+}
+function stopEssParticles(){
+  if(essAnimId){cancelAnimationFrame(essAnimId);essAnimId=null}
+}
+
 // Register SW with cache-busting
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=7').catch(()=>{})}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=8').catch(()=>{})}
 </script>
 </body>
 </html>
