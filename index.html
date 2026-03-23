@@ -158,10 +158,22 @@ input{font-family:inherit}
 
 
 
-/* ═══ WIND SCATTER ═══ */
-.wind-canvas{position:fixed;inset:0;z-index:250;pointer-events:none;opacity:0;
-  transition:opacity .1s ease}
-.wind-canvas.active{opacity:1}
+/* ═══ INK WASH CLOSE ═══ */
+.ink-wash{position:fixed;inset:0;z-index:250;pointer-events:none;
+  opacity:0;transition:opacity .3s ease}
+.ink-wash.active{opacity:1}
+.ink-wash::before,.ink-wash::after{content:'';position:absolute;inset:0}
+.ink-wash::before{
+  background:linear-gradient(105deg,transparent 0%,var(--fg) 35%,var(--fg) 65%,transparent 100%);
+  transform:translateX(110%);transition:none}
+.ink-wash.sweep::before{
+  transform:translateX(-110%);
+  transition:transform .55s cubic-bezier(.4,0,.2,1)}
+.ink-wash::after{
+  background:radial-gradient(ellipse at 50% 50%,
+    rgba(201,169,110,.15) 0%,transparent 70%);
+  opacity:0;transition:opacity .4s ease .2s}
+.ink-wash.sweep::after{opacity:1}
 /* ═══ SWIPE TRANSITION FX ═══ */
 .swipe-fx{position:fixed;inset:0;z-index:50;pointer-events:none;opacity:0;
   transition:opacity .15s ease}
@@ -171,6 +183,9 @@ input{font-family:inherit}
   transform:translateY(100%);transition:transform .45s cubic-bezier(.22,1,.36,1);
   overflow:hidden}
 .reader.open{transform:translateY(0)}
+.reader.closing{transform:scale(.92);opacity:0;
+  transition:transform .4s cubic-bezier(.4,0,1,1),opacity .35s ease .05s;
+  filter:blur(6px)}
 .r-scroll{display:flex;width:100%;height:100%;
   overflow-x:scroll;overflow-y:hidden;
   scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
@@ -429,7 +444,7 @@ input{font-family:inherit}
   </div>
 </div>
 
-<canvas class="wind-canvas" id="windCanvas"></canvas>
+<div class="ink-wash" id="inkWash"></div>
 <div class="sumi-overlay" id="sumiOverlay">
   <div class="sumi-bg"></div>
   <canvas class="sparkle-canvas" id="sparkleCanvas"></canvas>
@@ -1109,125 +1124,46 @@ function burstEnlightenment(){
 }
 
 
-// ═══ WIND SCATTER CLOSE ═══
-function windScatterClose(){
-  const c=$('windCanvas');if(!c)return;
-  c.classList.add('active');
-  const dpr=window.devicePixelRatio||1;
-  const W=window.innerWidth,H=window.innerHeight;
-  c.width=W*dpr;c.height=H*dpr;
-  const ctx=c.getContext('2d');
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-  const isDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
-  const serif=getComputedStyle(document.documentElement).getPropertyValue('--serif');
-
-  // Collect text fragments from reader — BIGGER, more visible
-  const body=$('rBody');
-  const frags=[];
-  if(body){
-    const words=(body.innerText||'').split(/\s+/).filter(w=>w.length>1);
-    const n=Math.min(55,words.length);
-    const step=Math.max(1,Math.floor(words.length/n));
-    for(let i=0,j=0;i<words.length&&j<n;i+=step,j++){
-      const row=j%10;
-      frags.push({
-        text:words[i].substring(0,16),
-        x:10+Math.random()*(W*.7),
-        y:30+row*(H/10)+(Math.random()-.5)*40,
-        vx:3+Math.random()*7,
-        vy:(Math.random()-.5)*8,
-        rot:0,
-        vrot:(Math.random()-.5)*12,
-        alpha:1,
-        size:14+Math.random()*12,
-        delay:j*.015+Math.random()*.08
-      });
-    }
-  }
-
-  // Dust particles — paper debris + ink specks
-  const dust=[];
-  for(let i=0;i<70;i++){
-    dust.push({
-      x:Math.random()*W*.8,
-      y:Math.random()*H,
-      vx:4+Math.random()*14,
-      vy:(Math.random()-.5)*8,
-      r:.5+Math.random()*3,
-      alpha:.6+Math.random()*.4,
-      life:1.5+Math.random(),
-      maxLife:1.5+Math.random(),
-      type:Math.random()>.5?'line':'dot'
-    });
-  }
-
-  // Slide reader to right then close — FIX: clear inline styles after
+// ═══ INK WASH CLOSE ═══
+function inkWashClose(){
+  const wash=$('inkWash');
   const reader=$('reader');
-  reader.style.transition='transform .4s cubic-bezier(.4,0,1,1)';
-  reader.style.transform='translateX(105%)';
+  if(!wash||!reader)return;
+
+  // Phase 1: Reader shrinks + blurs (content feels like it's being absorbed)
+  reader.classList.add('closing');
+
+  // Phase 2: Ink brush sweeps across (starts slightly after shrink begins)
   setTimeout(()=>{
-    // Remove inline styles so CSS classes work again
-    reader.style.transition='';
+    wash.classList.add('active');
+    // Force reflow before adding sweep
+    wash.offsetHeight;
+    wash.classList.add('sweep');
+  },100);
+
+  // Phase 3: Close reader while ink is covering the screen
+  setTimeout(()=>{
+    reader.classList.remove('closing');
+    reader.style.transition='none';
     reader.style.transform='';
     closeReader();
-  },420);
-
-  let last=0,elapsed=0;
-  function frame(t){
-    const dt=last?Math.min((t-last)/1000,.05):.016;
-    last=t;elapsed+=dt;
-    ctx.clearRect(0,0,W,H);
-    let alive=false;
-
-    // Flying text — staggered cascade
-    frags.forEach(f=>{
-      if(elapsed<f.delay)return;
-      const age=elapsed-f.delay;
-      f.x+=f.vx*(1+age*.5);
-      f.vy+=(Math.random()-.5)*.6;
-      f.y+=f.vy;
-      f.rot+=f.vrot;
-      f.vrot*=.97;
-      f.alpha-=dt*.45;
-      if(f.alpha<=0||f.x>W+150)return;
-      alive=true;
-      ctx.save();
-      ctx.translate(f.x,f.y);
-      ctx.rotate(f.rot*Math.PI/180);
-      ctx.globalAlpha=Math.max(0,f.alpha);
-      ctx.font='600 '+f.size+'px '+serif;
-      // Strong contrast text
-      ctx.fillStyle=isDark?'rgba(245,245,247,.75)':'rgba(29,29,31,.65)';
-      ctx.fillText(f.text,0,0);
-      // Subtle shadow for depth
-      ctx.shadowColor=isDark?'rgba(201,169,110,.3)':'rgba(139,111,71,.2)';
-      ctx.shadowBlur=f.size*.3;
-      ctx.fillText(f.text,0,0);
-      ctx.restore();
+    // Restore transition for next open
+    requestAnimationFrame(()=>{
+      reader.style.transition='';
     });
+  },350);
 
-    // Dust — trails + dots
-    dust.forEach(p=>{
-      p.life-=dt;if(p.life<=0)return;
-      alive=true;
-      p.x+=p.vx;p.y+=p.vy;
-      p.vy+=(Math.random()-.5)*.8;
-      p.vx*=.99;
-      const a=(p.life/p.maxLife)*p.alpha;
-      if(p.type==='line'){
-        ctx.strokeStyle=isDark?'rgba(200,180,150,'+(a*.5)+')':'rgba(80,60,40,'+(a*.35)+')';
-        ctx.lineWidth=.8;
-        ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x-p.vx*3,p.y-p.vy*3);ctx.stroke();
-      } else {
-        ctx.fillStyle=isDark?'rgba(200,180,150,'+(a*.6)+')':'rgba(100,80,60,'+(a*.4)+')';
-        ctx.beginPath();ctx.arc(p.x,p.y,p.r*(p.life/p.maxLife),0,Math.PI*2);ctx.fill();
-      }
-    });
-
-    if(alive&&elapsed<3.5)requestAnimationFrame(frame);
-    else{ctx.clearRect(0,0,W,H);c.classList.remove('active')}
-  }
-  requestAnimationFrame(frame);
+  // Phase 4: Ink wash fades out, revealing the list
+  setTimeout(()=>{
+    wash.classList.remove('sweep');
+    wash.classList.remove('active');
+    // Reset pseudo-element position after transition ends
+    setTimeout(()=>{
+      wash.style.display='none';
+      wash.offsetHeight;
+      wash.style.display='';
+    },400);
+  },600);
 }
 function randomStory(){
   const all=src(),unrd=all.filter(s=>!rdSet.has(s.n));
@@ -1321,7 +1257,7 @@ $('rPage1').addEventListener('touchstart',e=>{
 $('rPage1').addEventListener('touchend',e=>{
   const dx=e.changedTouches[0].clientX-tx;
   const dy=Math.abs(e.changedTouches[0].clientY-ty);
-  if(dx>80&&dy<80) windScatterClose();
+  if(dx>80&&dy<80) inkWashClose();
 },{passive:true});
 
 // (old close glow removed — replaced by wind scatter)
