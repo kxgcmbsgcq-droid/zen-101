@@ -140,11 +140,12 @@ input{font-family:inherit}
 .card-h{font-family:var(--serif);font-size:16px;font-weight:600;line-height:1.3}
 .card-h2{font-size:13px;color:var(--fg2);margin-top:1px;font-style:italic;line-height:1.3;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.card-row{display:flex;align-items:center;gap:5px;margin-top:5px;flex-wrap:wrap}
+.card-row{display:flex;align-items:center;gap:5px;margin-top:5px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;mask-image:linear-gradient(90deg,#000 calc(100% - 20px),transparent);-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 20px),transparent)}
 .card-min{font-size:11px;color:var(--fg3);white-space:nowrap;flex-shrink:0}
 .card-tg{font-size:10px;color:var(--accent);background:var(--accent-s);
   padding:2px 7px;border-radius:5px;font-weight:500;letter-spacing:.2px;
   white-space:nowrap;flex-shrink:0}
+.card-row::-webkit-scrollbar{display:none}
 .card-date{font-size:10px;color:var(--green);font-weight:500}
 .card-end{display:flex;align-items:center;padding:0 14px;flex-shrink:0}
 .card-chev{color:var(--fg3);font-size:13px;font-weight:300}
