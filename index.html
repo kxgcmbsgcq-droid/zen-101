@@ -156,6 +156,11 @@ input{font-family:inherit}
 .empty-t{font-family:var(--serif);font-size:17px}
 
 
+
+/* ═══ SWIPE TRANSITION FX ═══ */
+.swipe-fx{position:fixed;inset:0;z-index:50;pointer-events:none;opacity:0;
+  transition:opacity .15s ease}
+.swipe-fx.active{opacity:1}
 /* ═══ READER ═══ */
 .reader{position:fixed;inset:0;z-index:200;background:var(--bg);
   transform:translateY(100%);transition:transform .45s cubic-bezier(.22,1,.36,1);
@@ -379,6 +384,7 @@ input{font-family:inherit}
 
 <div class="reader" id="reader">
   <div class="r-scroll" id="rScroll">
+    <canvas class="swipe-fx" id="swipeFx"></canvas>
     <div class="r-page" id="rPage1">
       <div class="r-nav">
         <button class="r-back" id="rBack">‹</button>
@@ -1055,6 +1061,8 @@ function updInk(){
   });
 }
 setTimeout(updInk,50);
+window.addEventListener('load',updInk);
+window.addEventListener('resize',()=>setTimeout(updInk,50));
 
 // Events
 $('collTabs').addEventListener('click',e=>{const t=e.target.closest('.hdr-tab');
@@ -1118,62 +1126,184 @@ $('sumiOverlay').addEventListener('click',()=>{
 // Init
 updLang();updCollUI();render();
 
-// ═══ ESSENCE PARTICLES ═══
-let essAnimId=null;
-function initEssParticles(){
-  const c=document.getElementById('essParticles');
-  if(!c)return;
-  const ctx=c.getContext('2d');
+
+// ═══ SWIPE TRANSITION FX ═══
+(function(){
+  const canvas=$('swipeFx');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
   const dpr=window.devicePixelRatio||1;
-  function resize(){c.width=c.offsetWidth*dpr;c.height=c.offsetHeight*dpr;ctx.scale(dpr,dpr)}
-  resize();
-  const W=()=>c.offsetWidth,H=()=>c.offsetHeight;
-  const particles=[];
-  const N=20;
-  for(let i=0;i<N;i++){
-    particles.push({
-      x:Math.random()*W(),y:Math.random()*H(),
-      vx:(Math.random()-.5)*.15,vy:-Math.random()*.15-.02,
-      r:Math.random()*1.5+.5,
-      a:Math.random()*.25+.05,
-      phase:Math.random()*Math.PI*2,
-      speed:Math.random()*.005+.002
-    });
+  let W=0,H=0,animId=null,particles=[],lastProg=-1,burstDone=false;
+
+  function resize(){
+    W=window.innerWidth;H=window.innerHeight;
+    canvas.width=W*dpr;canvas.height=H*dpr;
+    ctx.scale(dpr,dpr);
   }
-  function draw(t){
-    ctx.clearRect(0,0,W(),H());
+  resize();
+  window.addEventListener('resize',resize);
+
+  // Particle class for burst effect
+  function spawnBurst(x,dir){
+    const n=18;
+    for(let i=0;i<n;i++){
+      const angle=(Math.PI*.6)*(i/n-.5)+(dir>0?0:Math.PI);
+      const speed=1.5+Math.random()*3;
+      const life=.4+Math.random()*.5;
+      particles.push({
+        x:x,y:H*.2+Math.random()*H*.6,
+        vx:Math.cos(angle)*speed*dir,
+        vy:Math.sin(angle)*speed+(Math.random()-.5)*1.5,
+        r:Math.random()*2+.8,
+        life:life,maxLife:life,
+        gold:Math.random()>.3
+      });
+    }
+  }
+
+  // Edge glow gradient
+  function drawGlow(prog){
+    // prog: 0=story, 1=essence
+    const intensity=1-Math.abs(prog*2-1); // peaks at 0.5
+    if(intensity<.02)return;
+
+    const edgeX=W*(1-prog); // where the page edge is
     const isDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
-    particles.forEach(p=>{
-      p.x+=p.vx+Math.sin(t*p.speed+p.phase)*.15;
-      p.y+=p.vy;
-      if(p.y<-10){p.y=H()+10;p.x=Math.random()*W()}
-      if(p.x<-10)p.x=W()+10;
-      if(p.x>W()+10)p.x=-10;
-      const flicker=.5+.5*Math.sin(t*p.speed*3+p.phase);
-      const alpha=p.a*flicker;
-      if(isDark){
-        ctx.fillStyle='rgba(232,213,176,'+alpha+')';
-        // tiny glow
-        ctx.shadowColor='rgba(201,169,110,'+(alpha*.6)+')';
-        ctx.shadowBlur=p.r*4;
+
+    // Vertical glow line at page edge
+    const g1=ctx.createLinearGradient(edgeX-60,0,edgeX+60,0);
+    if(isDark){
+      g1.addColorStop(0,'rgba(201,169,110,0)');
+      g1.addColorStop(.35,'rgba(201,169,110,'+(intensity*.15)+')');
+      g1.addColorStop(.5,'rgba(232,213,176,'+(intensity*.35)+')');
+      g1.addColorStop(.65,'rgba(201,169,110,'+(intensity*.15)+')');
+      g1.addColorStop(1,'rgba(201,169,110,0)');
+    } else {
+      g1.addColorStop(0,'rgba(139,111,71,0)');
+      g1.addColorStop(.35,'rgba(139,111,71,'+(intensity*.08)+')');
+      g1.addColorStop(.5,'rgba(201,169,110,'+(intensity*.2)+')');
+      g1.addColorStop(.65,'rgba(139,111,71,'+(intensity*.08)+')');
+      g1.addColorStop(1,'rgba(139,111,71,0)');
+    }
+    ctx.fillStyle=g1;
+    ctx.fillRect(edgeX-60,0,120,H);
+
+    // Bright center line
+    const g2=ctx.createLinearGradient(edgeX-2,0,edgeX+2,0);
+    const lineAlpha=intensity*.4;
+    if(isDark){
+      g2.addColorStop(0,'rgba(232,213,176,0)');
+      g2.addColorStop(.5,'rgba(232,213,176,'+lineAlpha+')');
+      g2.addColorStop(1,'rgba(232,213,176,0)');
+    } else {
+      g2.addColorStop(0,'rgba(201,169,110,0)');
+      g2.addColorStop(.5,'rgba(201,169,110,'+lineAlpha+')');
+      g2.addColorStop(1,'rgba(201,169,110,0)');
+    }
+    ctx.fillStyle=g2;
+    ctx.fillRect(edgeX-2,0,4,H);
+
+    // Top and bottom fade for the glow (so it doesn't just cut off)
+    const vFade=ctx.createLinearGradient(0,0,0,H);
+    vFade.addColorStop(0,'rgba(0,0,0,0)');
+    vFade.addColorStop(.12,'rgba(0,0,0,1)');
+    vFade.addColorStop(.88,'rgba(0,0,0,1)');
+    vFade.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.globalCompositeOperation='destination-in';
+    ctx.fillStyle=vFade;
+    ctx.fillRect(0,0,W,H);
+    ctx.globalCompositeOperation='source-over';
+  }
+
+  // Draw and update particles
+  function drawParticles(dt){
+    const isDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+    particles=particles.filter(p=>{
+      p.life-=dt;
+      if(p.life<=0)return false;
+      p.x+=p.vx;p.y+=p.vy;
+      p.vx*=.97;p.vy*=.97;
+      const a=(p.life/p.maxLife);
+      const alpha=a*a; // ease out
+      if(p.gold){
+        ctx.fillStyle=isDark
+          ?'rgba(232,213,176,'+(alpha*.7)+')'
+          :'rgba(201,169,110,'+(alpha*.5)+')';
+        ctx.shadowColor=isDark
+          ?'rgba(201,169,110,'+(alpha*.5)+')'
+          :'rgba(139,111,71,'+(alpha*.3)+')';
+        ctx.shadowBlur=p.r*5;
       } else {
-        ctx.fillStyle='rgba(139,111,71,'+(alpha*.5)+')';
-        ctx.shadowColor='rgba(139,111,71,'+(alpha*.3)+')';
-        ctx.shadowBlur=p.r*3;
+        ctx.fillStyle=isDark
+          ?'rgba(255,255,255,'+(alpha*.3)+')'
+          :'rgba(139,111,71,'+(alpha*.25)+')';
+        ctx.shadowBlur=0;
       }
       ctx.beginPath();
-      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.arc(p.x,p.y,p.r*a,0,Math.PI*2);
       ctx.fill();
+      ctx.shadowBlur=0;
+      return true;
     });
-    ctx.shadowBlur=0;
-    essAnimId=requestAnimationFrame(draw);
   }
-  if(essAnimId)cancelAnimationFrame(essAnimId);
-  essAnimId=requestAnimationFrame(draw);
-}
-function stopEssParticles(){
-  if(essAnimId){cancelAnimationFrame(essAnimId);essAnimId=null}
-}
+
+  let lastTime=0,isScrolling=false,scrollTimer=null;
+
+  function animate(t){
+    const dt=lastTime?Math.min((t-lastTime)/1000,.05):0.016;
+    lastTime=t;
+    ctx.clearRect(0,0,W,H);
+
+    const rs=$('rScroll');
+    if(!rs||!rs.scrollWidth)return;
+    const prog=rs.scrollLeft/(rs.scrollWidth-rs.offsetWidth||1);
+
+    // Draw glow at page edge during scroll
+    drawGlow(prog);
+
+    // Spawn burst particles at crossing point
+    const mid=.5;
+    if(lastProg>=0){
+      const crossed=(lastProg<mid&&prog>=mid)||(lastProg>mid&&prog<=mid);
+      if(crossed&&!burstDone){
+        const dir=prog>lastProg?1:-1;
+        spawnBurst(W*.5,dir);
+        burstDone=true;
+      }
+      if(Math.abs(prog-mid)>.15)burstDone=false;
+    }
+    lastProg=prog;
+
+    drawParticles(dt);
+
+    // Show/hide canvas
+    const moving=Math.abs(prog*2-1)<.92;
+    if(moving||particles.length>0){
+      canvas.classList.add('active');
+      animId=requestAnimationFrame(animate);
+    } else {
+      canvas.classList.remove('active');
+      animId=null;
+    }
+  }
+
+  function startAnim(){
+    if(!animId){lastTime=0;animId=requestAnimationFrame(animate)}
+  }
+
+  // Hook into rScroll
+  const rs=$('rScroll');
+  if(rs){
+    rs.addEventListener('scroll',()=>{
+      startAnim();
+      clearTimeout(scrollTimer);
+      scrollTimer=setTimeout(()=>{
+        // Final settle — let animation finish naturally
+      },200);
+    },{passive:true});
+  }
+})();
+
 
 // Register SW with cache-busting
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js?v=8').catch(()=>{})}
