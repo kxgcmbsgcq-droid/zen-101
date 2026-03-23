@@ -132,6 +132,9 @@ input{font-family:inherit}
 .card.read .card-bar{opacity:1}
 .card.used .card-bar{background:linear-gradient(180deg,var(--gold1),var(--gold3))}
 .card-inner{flex:1;padding:14px 0 14px 16px;display:flex;gap:14px;align-items:flex-start;min-width:0}
+.card-ico{font-size:22px;line-height:1;flex-shrink:0;opacity:.7;filter:grayscale(.3);
+  width:28px;text-align:center}
+.card.used .card-ico{opacity:1;filter:grayscale(0)}
 .card-n{font-family:var(--disp);font-size:26px;font-weight:700;color:var(--accent);opacity:.2;
   line-height:1;min-width:32px;text-align:right;font-variant-numeric:tabular-nums;padding-top:2px}
 .card.read .card-n{opacity:.45}
@@ -554,6 +557,10 @@ const TL={wijsheid:'Wijsheid',meester:'Meester & Leerling',humor:'Humor',kracht:
   eenvoud:'Eenvoud',paradox:'Paradox',compassie:'Compassie',verlichting:'Verlichting',
   dood:'Vergankelijkheid',kunst:'Kunst & Meesterschap',gehechtheid:'Gehechtheid',
   ego:'Ego',stilte:'Stilte',natuur:'Natuur'};
+const TI={wijsheid:'🧠',meester:'🎎',humor:'😄',kracht:'⚡',
+  eenvoud:'🍃',paradox:'🔄',compassie:'💛',verlichting:'✨',
+  dood:'🌅',kunst:'🎨',gehechtheid:'🔗',ego:'🪞',stilte:'🧘',natuur:'🌿'};
+function tagIcon(tags){return tags.length?TI[tags[0]]||'📿':'📿'}
 
 // ═══ MUMONKAN — 48 Koans of The Gateless Gate ═══
 const K=[
@@ -695,6 +702,7 @@ function render(){
     return`<div class="card${isRead?' read':''}${isUsed?' used':''}${isBm?' bm':''}" data-n="${s.n}">
       <div class="card-bar"></div>
       <div class="card-inner">
+        <div class="card-ico">${tagIcon(s.t)}</div>
         <div class="card-n">${s.n}</div>
         <div class="card-txt">
           <div class="card-h">${title}</div>
@@ -1145,45 +1153,45 @@ updLang();updCollUI();render();
 
   // === PARTICLE SPAWNERS ===
   function spawnBurst(x,dir){
-    const n=40;
+    const n=65;
     for(let i=0;i<n;i++){
-      const spread=Math.PI*.8;
+      const spread=Math.PI*1.1;
       const angle=spread*(i/n-.5)+(dir>0?0:Math.PI);
-      const speed=2+Math.random()*5;
-      const life=.5+Math.random()*.7;
+      const speed=1.5+Math.random()*6;
+      const life=.8+Math.random()*1.2;
       particles.push({
-        x:x,y:H*.1+Math.random()*H*.8,
-        vx:Math.cos(angle)*speed*dir*.8,
-        vy:Math.sin(angle)*speed+(Math.random()-.5)*2,
-        r:Math.random()*2.5+1,
+        x:x+(Math.random()-.5)*20,y:H*.05+Math.random()*H*.9,
+        vx:Math.cos(angle)*speed*dir,
+        vy:Math.sin(angle)*speed+(Math.random()-.5)*2.5,
+        r:Math.random()*3+1.2,
         life:life,maxLife:life,
-        gold:Math.random()>.2,
-        spark:Math.random()>.7
+        gold:Math.random()>.15,
+        spark:Math.random()>.6
       });
     }
   }
 
   // Trailing particles during active scroll
   function spawnTrail(edgeX,velocity){
-    const n=3;
+    const n=5;
     for(let i=0;i<n;i++){
       particles.push({
-        x:edgeX+((Math.random()-.5)*40),
+        x:edgeX+((Math.random()-.5)*60),
         y:Math.random()*H,
-        vx:velocity*2+(Math.random()-.5)*1.5,
-        vy:(Math.random()-.5)*2,
-        r:Math.random()*1.5+.5,
-        life:.3+Math.random()*.4,
-        maxLife:.3+Math.random()*.4,
-        gold:true,spark:false
+        vx:velocity*2.5+(Math.random()-.5)*2,
+        vy:(Math.random()-.5)*2.5,
+        r:Math.random()*2+.8,
+        life:.5+Math.random()*.6,
+        maxLife:.5+Math.random()*.6,
+        gold:true,spark:Math.random()>.7
       });
     }
   }
 
   // Edge shimmer sparkles
   function spawnShimmer(edgeX,intensity){
-    if(Math.random()>.3)return;
-    const n=2;
+    if(Math.random()>.5)return;
+    const n=3;
     for(let i=0;i<n;i++){
       particles.push({
         x:edgeX+(Math.random()-.5)*8,
@@ -1262,7 +1270,7 @@ updLang();updCollUI();render();
       p.life-=dt;
       if(p.life<=0)return false;
       p.x+=p.vx;p.y+=p.vy;
-      p.vx*=.96;p.vy*=.96;
+      p.vx*=.98;p.vy*=.98;
       const a=p.life/p.maxLife;
       const alpha=a*a;
 
@@ -1329,7 +1337,7 @@ updLang();updCollUI();render();
     const edgeX=W*(1-prog);
     const absVel=Math.abs(velocity);
     trailTimer+=dt;
-    if(absVel>.3&&trailTimer>.03){
+    if(absVel>.15&&trailTimer>.025){
       spawnTrail(edgeX,velocity>0?-1:1);
       trailTimer=0;
     }
