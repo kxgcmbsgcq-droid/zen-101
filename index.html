@@ -54,17 +54,26 @@ input{font-family:inherit}
   background:#1A1A1E;display:flex;align-items:center;justify-content:center;
   box-shadow:0 1px 4px rgba(0,0,0,.15)}
 .nav-logo svg{width:24px;height:24px}
-.nav-t{flex:1;font-family:var(--disp);font-size:17px;font-weight:600;letter-spacing:-.2px}
+.nav-spacer{flex:1}
 .nav-shuffle{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;
   justify-content:center;font-size:17px;transition:background .15s}
 .nav-shuffle:active{background:var(--accent-s)}
 
 /* ═══ HERO ═══ */
-.hero{max-width:600px;margin:0 auto;padding:12px 24px 0;position:relative}
-.hero-bg{position:absolute;top:-20px;right:-20px;width:200px;height:200px;
-  opacity:.03;font-size:200px;line-height:1;pointer-events:none;user-select:none}
-.hero h1{font-family:var(--serif);font-size:34px;font-weight:700;letter-spacing:-.5px;line-height:1.1}
-.hero-sub{font-size:14px;color:var(--fg2);margin-top:4px;font-style:italic}
+.hero{max-width:600px;margin:0 auto;padding:24px 24px 16px;position:relative}
+.hero-bg{position:absolute;top:-30px;right:-30px;width:220px;height:220px;
+  opacity:.025;font-size:220px;line-height:1;pointer-events:none;user-select:none}
+.hero-brand{text-align:center;position:relative}
+.hero-mark{width:48px;height:48px;margin:0 auto 12px}
+.hero-enso{width:48px;height:48px;opacity:.7}
+.hero h1{font-family:var(--serif);font-size:38px;font-weight:700;
+  letter-spacing:1px;line-height:1;
+  background:linear-gradient(135deg,var(--gold2) 0%,var(--gold1) 40%,var(--gold3) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text}
+.hero-rule{width:32px;height:1px;margin:10px auto;
+  background:linear-gradient(90deg,transparent,var(--accent2),transparent);opacity:.5}
+.hero-sub{font-size:13px;color:var(--fg2);font-style:italic;letter-spacing:.3px}
 
 /* ═══ COLLECTION TAB ═══ */
 .coll{max-width:600px;margin:10px auto 0;padding:0 24px}
@@ -172,28 +181,22 @@ input{font-family:inherit}
   flex-shrink:0;overscroll-behavior-y:contain}
 
 /* ═══ ESSENCE PAGE ═══ */
-.r-page-ess{position:relative;overflow:hidden;background:linear-gradient(165deg,#1a1433 0%,#2a1f3d 35%,#1e2a3a 100%)}
+.r-page-ess{position:relative;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;background:linear-gradient(165deg,#1a1433 0%,#2a1f3d 35%,#1e2a3a 100%)}
 @media(prefers-color-scheme:light){
   .r-page-ess{background:linear-gradient(165deg,#f0e8f5 0%,#e8e0f0 35%,#e0e8f0 100%)}}
 .ess-wrap{max-width:600px;margin:0 auto;padding:calc(var(--st) + 60px) 32px calc(80px + var(--sb));
   min-height:100%;display:flex;flex-direction:column;justify-content:center;position:relative}
 .ess-enso{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  width:280px;height:280px;opacity:0;transition:opacity 1.2s ease}
-.r-page-ess.visible .ess-enso{opacity:.08}
-@media(prefers-color-scheme:light){.r-page-ess.visible .ess-enso{opacity:.06}}
+  width:280px;height:280px;opacity:.07}
+@media(prefers-color-scheme:light){.ess-enso{opacity:.05}}
 .ess-label{font-family:var(--disp);font-size:11px;font-weight:700;letter-spacing:3px;
-  text-transform:uppercase;color:var(--accent2);margin-bottom:24px;
-  opacity:0;transform:translateY(16px);transition:all .8s cubic-bezier(.32,.72,0,1)}
-.r-page-ess.visible .ess-label{opacity:.7;transform:translateY(0)}
+  text-transform:uppercase;color:var(--accent2);margin-bottom:24px;opacity:.7}
 .ess-text{font-family:var(--serif);font-size:20px;line-height:1.9;
-  color:var(--fg);letter-spacing:.15px;position:relative;z-index:1;
-  opacity:0;transform:translateY(20px);transition:all 1s cubic-bezier(.32,.72,0,1) .2s}
-.r-page-ess.visible .ess-text{opacity:1;transform:translateY(0)}
+  color:var(--fg);letter-spacing:.15px;position:relative;z-index:1}
 .ess-text p{margin-bottom:1.2em}
 .ess-text p:last-child{margin-bottom:0}
 .ess-back{font-family:var(--disp);font-size:13px;color:var(--accent2);
-  margin-top:40px;opacity:0;transition:opacity .6s ease .8s}
-.r-page-ess.visible .ess-back{opacity:.5}
+  margin-top:40px;opacity:.5}
 
 /* Swipe hint at bottom of story */
 .swipe-hint{text-align:center;padding:40px 0 20px;opacity:0;
@@ -325,15 +328,25 @@ input{font-family:inherit}
     <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#E8D5B0"/><stop offset="100%" stop-color="#8B6F47"/></linearGradient></defs>
     <path d="M50 15C30.7 15 15 30.7 15 50s15.7 35 35 35 35-15.7 35-35" stroke="url(#lg)" stroke-width="6" stroke-linecap="round"/>
   </svg></div>
-  <span class="nav-t">JiGyo</span>
-  <button class="nav-lang-btn" id="navLangBtn">NL</button>
+  
+  <div class="nav-spacer"></div>
+    <button class="nav-lang-btn" id="navLangBtn">NL</button>
     <button class="nav-shuffle" id="shuffleBtn">🎲</button>
 </div></nav>
 
 <section class="hero">
   <div class="hero-bg">禅</div>
-  <h1>JiGyo</h1>
-  <p class="hero-sub" id="heroSub">101 Zen Stories — Reps &amp; Senzaki</p>
+  <div class="hero-brand">
+    <div class="hero-mark">
+      <svg viewBox="0 0 100 100" fill="none" class="hero-enso">
+        <path d="M50 12C28.5 12 12 28.5 12 50s16.5 38 38 38 38-16.5 38-38" stroke="url(#hg)" stroke-width="5" stroke-linecap="round" fill="none"/>
+        <defs><linearGradient id="hg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#E8D5B0"/><stop offset="100%" stop-color="#8B6F47"/></linearGradient></defs>
+      </svg>
+    </div>
+    <h1>JiGyo</h1>
+    <p class="hero-rule"></p>
+    <p class="hero-sub" id="heroSub">101 Zen Stories — Reps &amp; Senzaki</p>
+  </div>
 </section>
 
 <div class="coll"><div class="coll-tabs" id="collTabs">
