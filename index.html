@@ -45,49 +45,29 @@ input{font-family:inherit}
 
 /* ═══ NAV ═══ */
 .nav{position:sticky;top:0;z-index:100;
-  padding:calc(var(--st) + 8px) 20px 10px;
-  background:color-mix(in srgb,var(--bg) 82%,transparent);
+  padding:calc(var(--st) + 6px) 16px 6px;
+  background:color-mix(in srgb,var(--bg) 85%,transparent);
   backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px)}
 .nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:.33px;background:var(--b2)}
-.nav-row{max-width:600px;margin:0 auto;display:flex;align-items:center;gap:12px}
-.nav-logo{width:32px;height:32px;border-radius:8px;overflow:hidden;flex-shrink:0;
-  background:#1A1A1E;display:flex;align-items:center;justify-content:center;
-  box-shadow:0 1px 4px rgba(0,0,0,.15)}
-.nav-logo svg{width:24px;height:24px}
-.nav-spacer{flex:1}
-.nav-shuffle{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;
-  justify-content:center;font-size:17px;transition:background .15s}
-.nav-shuffle:active{background:var(--accent-s)}
-
-/* ═══ HERO ═══ */
-.hero{max-width:600px;margin:0 auto;padding:24px 24px 16px;position:relative}
-.hero-bg{position:absolute;top:-30px;right:-30px;width:220px;height:220px;
-  opacity:.025;font-size:220px;line-height:1;pointer-events:none;user-select:none}
-.hero-brand{text-align:center;position:relative}
-.hero-mark{width:48px;height:48px;margin:0 auto 12px}
-.hero-enso{width:48px;height:48px;opacity:.7}
-.hero h1{font-family:var(--serif);font-size:38px;font-weight:700;
-  letter-spacing:1px;line-height:1;
-  background:linear-gradient(135deg,var(--gold2) 0%,var(--gold1) 40%,var(--gold3) 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text}
-.hero-rule{width:32px;height:1px;margin:10px auto;
-  background:linear-gradient(90deg,transparent,var(--accent2),transparent);opacity:.5}
-.hero-sub{font-size:13px;color:var(--fg2);font-style:italic;letter-spacing:.3px}
-
-/* ═══ COLLECTION TAB ═══ */
-.coll{max-width:600px;margin:10px auto 0;padding:0 24px}
-.coll-tabs{display:flex;background:var(--accent-s);border-radius:10px;padding:2px;gap:2px}
-.coll-tab{flex:1;padding:7px 0;border-radius:8px;font-size:13px;font-weight:600;
-  text-align:center;color:var(--fg2);transition:all .25s cubic-bezier(.32,.72,0,1);
-  letter-spacing:.2px;position:relative}
-.coll-tab.active{background:var(--card);color:var(--fg);
-  box-shadow:0 1px 4px rgba(0,0,0,.06),0 0 0 .5px var(--b)}
-.coll-tab .coll-n{font-size:11px;font-weight:400;opacity:.6;margin-left:3px}
-
+.nav-row{max-width:600px;margin:0 auto;display:flex;align-items:center;gap:0}
+.nav-brand{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.nav-enso{width:22px;height:22px;opacity:.8}
+.nav-name{font-family:var(--serif);font-size:17px;font-weight:700;letter-spacing:.2px;
+  background:linear-gradient(135deg,var(--gold2),var(--gold1));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-tabs{display:flex;gap:2px;margin:0 auto;background:var(--accent-s);
+  border-radius:8px;padding:2px}
+.nav-tab{padding:4px 14px;border-radius:6px;font-size:12px;font-weight:600;
+  color:var(--fg2);border:none;background:none;white-space:nowrap;transition:all .2s}
+.nav-tab.active{background:var(--accent-m);color:var(--fg)}
+@media(prefers-color-scheme:dark){.nav-tab.active{background:rgba(201,169,110,.18)}}
+.nav-actions{display:flex;gap:2px;flex-shrink:0}
+.nav-act{font-size:13px;font-weight:600;color:var(--fg2);background:none;
+  border:none;padding:6px 8px;border-radius:6px;transition:background .15s}
+.nav-act:active{background:var(--accent-s)}
 
 /* ═══ SEARCH ═══ */
-.srch{max-width:600px;margin:8px auto 0;padding:0 24px;position:relative}
+.srch{max-width:600px;margin:8px auto 0;padding:0 16px;position:relative}
 .srch-i{position:absolute;left:38px;top:50%;transform:translateY(-50%);
   font-size:14px;color:var(--fg3);pointer-events:none;z-index:1}
 .srch input{width:100%;padding:11px 16px 11px 36px;border-radius:12px;border:.5px solid var(--b);
@@ -96,9 +76,6 @@ input{font-family:inherit}
 .srch input::placeholder{color:var(--fg3)}
 
 /* ═══ LANG ═══ */
-.nav-lang-btn{font-size:11px;font-weight:600;letter-spacing:.5px;
-  color:var(--fg2);background:var(--accent-s);border:none;border-radius:6px;
-  padding:4px 8px;cursor:pointer;transition:all .2s}
 
 /* ═══ TAGS ═══ */
 .tags{max-width:600px;margin:6px auto 0;padding:0 20px;display:flex;gap:6px;
@@ -150,21 +127,6 @@ input{font-family:inherit}
 .empty-t{font-family:var(--serif);font-size:17px}
 
 
-/* ═══ ESSENCE PARTICLES & GLOW ═══ */
-.ess-particles{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
-.ess-glow{position:absolute;width:250px;height:250px;border-radius:50%;
-  background:radial-gradient(circle,rgba(201,169,110,.06) 0%,transparent 70%);
-  top:50%;left:50%;transform:translate(-50%,-50%);z-index:0;
-  opacity:0;transition:opacity 3s ease;filter:blur(60px)}
-.r-page-ess.visible .ess-glow{opacity:1}
-.ess-wrap{position:relative;z-index:1}
-.ess-label{position:relative;z-index:1}
-.ess-text{position:relative;z-index:1}
-.ess-back{position:relative;z-index:1}
-@media(prefers-color-scheme:dark){
-  .ess-glow{background:radial-gradient(circle,rgba(201,169,110,.08) 0%,rgba(139,111,71,.03) 40%,transparent 70%)}
-}
-
 /* ═══ READER ═══ */
 .reader{position:fixed;inset:0;z-index:200;background:var(--bg);
   transform:translateY(100%);transition:transform .4s cubic-bezier(.32,.72,0,1);
@@ -181,14 +143,10 @@ input{font-family:inherit}
   flex-shrink:0;overscroll-behavior-y:contain}
 
 /* ═══ ESSENCE PAGE ═══ */
-.r-page-ess{position:relative;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;background:linear-gradient(165deg,#1a1433 0%,#2a1f3d 35%,#1e2a3a 100%)}
-@media(prefers-color-scheme:light){
-  .r-page-ess{background:linear-gradient(165deg,#f0e8f5 0%,#e8e0f0 35%,#e0e8f0 100%)}}
+.r-page-ess{position:relative;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;background:var(--bg)}
+
 .ess-wrap{max-width:600px;margin:0 auto;padding:calc(var(--st) + 60px) 32px calc(80px + var(--sb));
   min-height:100%;display:flex;flex-direction:column;justify-content:center;position:relative}
-.ess-enso{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  width:280px;height:280px;opacity:.07}
-@media(prefers-color-scheme:light){.ess-enso{opacity:.05}}
 .ess-label{font-family:var(--disp);font-size:11px;font-weight:700;letter-spacing:3px;
   text-transform:uppercase;color:var(--accent2);margin-bottom:24px;opacity:.7}
 .ess-text{font-family:var(--serif);font-size:20px;line-height:1.9;
@@ -257,7 +215,7 @@ input{font-family:inherit}
   transition:opacity .8s ease;display:flex;align-items:center;justify-content:center;
   flex-direction:column;gap:20px}
 .sumi-overlay.active{opacity:1;pointer-events:auto}
-.sumi-overlay.reversing{opacity:0;transition:opacity .6s ease}
+.sumi-overlay.reversing{opacity:0;transition:opacity .5s ease;pointer-events:none}
 .sumi-bg{position:absolute;inset:0;background:rgba(0,0,0,.85);
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .sumi-svg{position:relative;z-index:1;width:85vw;max-width:380px;height:auto}
@@ -324,35 +282,24 @@ input{font-family:inherit}
 </svg>
 
 <nav class="nav"><div class="nav-row">
-  <div class="nav-logo"><svg viewBox="0 0 100 100" fill="none">
-    <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#E8D5B0"/><stop offset="100%" stop-color="#8B6F47"/></linearGradient></defs>
-    <path d="M50 15C30.7 15 15 30.7 15 50s15.7 35 35 35 35-15.7 35-35" stroke="url(#lg)" stroke-width="6" stroke-linecap="round"/>
-  </svg></div>
-  
-  <div class="nav-spacer"></div>
-    <button class="nav-lang-btn" id="navLangBtn">NL</button>
-    <button class="nav-shuffle" id="shuffleBtn">🎲</button>
+  <div class="nav-brand">
+    <svg viewBox="0 0 100 100" fill="none" class="nav-enso">
+      <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#E8D5B0"/><stop offset="100%" stop-color="#8B6F47"/></linearGradient></defs>
+      <path d="M50 15C30.7 15 15 30.7 15 50s15.7 35 35 35 35-15.7 35-35" stroke="url(#lg)" stroke-width="6" stroke-linecap="round"/>
+    </svg>
+    <span class="nav-name">JiGyo</span>
+  </div>
+  <div class="nav-tabs" id="collTabs">
+    <button class="nav-tab active" data-c="stories">Verhalen</button>
+    <button class="nav-tab" data-c="koans">Koans</button>
+  </div>
+  <div class="nav-actions">
+    <button class="nav-act" id="navLangBtn">NL</button>
+    <button class="nav-act" id="shuffleBtn">🎲</button>
+  </div>
 </div></nav>
 
-<section class="hero">
-  <div class="hero-bg">禅</div>
-  <div class="hero-brand">
-    <div class="hero-mark">
-      <svg viewBox="0 0 100 100" fill="none" class="hero-enso">
-        <path d="M50 12C28.5 12 12 28.5 12 50s16.5 38 38 38 38-16.5 38-38" stroke="url(#hg)" stroke-width="5" stroke-linecap="round" fill="none"/>
-        <defs><linearGradient id="hg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#E8D5B0"/><stop offset="100%" stop-color="#8B6F47"/></linearGradient></defs>
-      </svg>
-    </div>
-    <h1>JiGyo</h1>
-    <p class="hero-rule"></p>
-    <p class="hero-sub" id="heroSub">101 Zen Stories — Reps &amp; Senzaki</p>
-  </div>
-</section>
 
-<div class="coll"><div class="coll-tabs" id="collTabs">
-  <button class="coll-tab active" data-c="stories">Verhalen<span class="coll-n">101</span></button>
-  <button class="coll-tab" data-c="koans">Koans<span class="coll-n">48</span></button>
-</div></div>
 
 <div class="srch"><span class="srch-i">⌕</span>
   <input type="search" placeholder="Zoek op titel, tekst of thema…" id="search" autocomplete="off"></div>
@@ -393,13 +340,7 @@ input{font-family:inherit}
       <div class="r-body" id="rBody"></div>
     </div>
     <div class="r-page r-page-ess" id="rPage2">
-      <div class="ess-glow"></div>
-      <canvas class="ess-particles" id="essParticles"></canvas>
       <div class="ess-wrap">
-        <svg class="ess-enso" viewBox="0 0 280 280" fill="none">
-          <path d="M 185 62 A 100 100 0 1 1 82 75" stroke="var(--accent2)" stroke-width="24"
-            stroke-linecap="round" fill="none"/>
-        </svg>
         <div class="ess-label">Essentie</div>
         <div class="ess-text" id="essText"></div>
         <div class="ess-back">← Swipe terug naar verhaal</div>
@@ -933,17 +874,14 @@ function reverseSumiE(){
   $('sumiLabel').classList.remove('show');
   $('sumiDate').classList.remove('show');
 
-  // Fade out overlay
   const overlay=$('sumiOverlay');
+  overlay.classList.add('reversing');
   setTimeout(()=>{
-    overlay.classList.add('reversing');
-    setTimeout(()=>{
-      overlay.classList.remove('active','reversing');
-      cleanupSumiReverse();
-      // Reset overscroll so they can trigger again
-      osTriggered=false;
-    },600);
-  },400);
+    overlay.classList.remove('active','reversing');
+    cleanupSumiReverse();
+    osTriggered=false;
+    sumiReversing=false;
+  },600);
 }
 
 function dismissSumiE(){
@@ -1020,7 +958,7 @@ function randomStory(){
 
 // ═══ COLLECTION TABS ═══
 function updCollUI(){
-  document.querySelectorAll('.coll-tab').forEach(t=>t.classList.toggle('active',t.dataset.c===coll));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.toggle('active',t.dataset.c===coll));
   $('heroSub').textContent=coll==='koans'?'48 Koans — Mumonkan':'101 Zen Stories — Reps & Senzaki';
   // Update tag counts for active collection
   const all=src();
@@ -1044,7 +982,7 @@ function switchColl(c){
 }
 
 // Events
-$('collTabs').addEventListener('click',e=>{const t=e.target.closest('.coll-tab');
+$('collTabs').addEventListener('click',e=>{const t=e.target.closest('.nav-tab');
   if(t&&t.dataset.c!==coll)switchColl(t.dataset.c)});
 $('list').addEventListener('click',e=>{const c=e.target.closest('.card');if(c)openStory(+c.dataset.n)});
 $('rBack').addEventListener('click',closeReader);
@@ -1086,8 +1024,8 @@ $('rPage1').addEventListener('touchend',e=>{
 $('rScroll').addEventListener('scroll',()=>{
   const sl=$('rScroll').scrollLeft,w=$('rScroll').offsetWidth/2;
   const essPage=$('rPage2');
-  if(sl>w*.4){essPage.classList.add('visible');initEssParticles()}
-  else{essPage.classList.remove('visible');stopEssParticles()}
+  if(sl>w*.4){essPage.classList.add('visible')}
+  else{essPage.classList.remove('visible')}
 },{passive:true});
 
 // Keyboard
