@@ -1133,121 +1133,173 @@ updLang();updCollUI();render();
   if(!canvas)return;
   const ctx=canvas.getContext('2d');
   const dpr=window.devicePixelRatio||1;
-  let W=0,H=0,animId=null,particles=[],lastProg=-1,burstDone=false;
+  let W=0,H=0,animId=null,particles=[],lastProg=-1,lastBurstProg=-1;
 
   function resize(){
     W=window.innerWidth;H=window.innerHeight;
     canvas.width=W*dpr;canvas.height=H*dpr;
-    ctx.scale(dpr,dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
   }
   resize();
   window.addEventListener('resize',resize);
 
-  // Particle class for burst effect
+  // === PARTICLE SPAWNERS ===
   function spawnBurst(x,dir){
-    const n=18;
+    const n=40;
     for(let i=0;i<n;i++){
-      const angle=(Math.PI*.6)*(i/n-.5)+(dir>0?0:Math.PI);
-      const speed=1.5+Math.random()*3;
-      const life=.4+Math.random()*.5;
+      const spread=Math.PI*.8;
+      const angle=spread*(i/n-.5)+(dir>0?0:Math.PI);
+      const speed=2+Math.random()*5;
+      const life=.5+Math.random()*.7;
       particles.push({
-        x:x,y:H*.2+Math.random()*H*.6,
-        vx:Math.cos(angle)*speed*dir,
-        vy:Math.sin(angle)*speed+(Math.random()-.5)*1.5,
-        r:Math.random()*2+.8,
+        x:x,y:H*.1+Math.random()*H*.8,
+        vx:Math.cos(angle)*speed*dir*.8,
+        vy:Math.sin(angle)*speed+(Math.random()-.5)*2,
+        r:Math.random()*2.5+1,
         life:life,maxLife:life,
-        gold:Math.random()>.3
+        gold:Math.random()>.2,
+        spark:Math.random()>.7
       });
     }
   }
 
-  // Edge glow gradient
+  // Trailing particles during active scroll
+  function spawnTrail(edgeX,velocity){
+    const n=3;
+    for(let i=0;i<n;i++){
+      particles.push({
+        x:edgeX+((Math.random()-.5)*40),
+        y:Math.random()*H,
+        vx:velocity*2+(Math.random()-.5)*1.5,
+        vy:(Math.random()-.5)*2,
+        r:Math.random()*1.5+.5,
+        life:.3+Math.random()*.4,
+        maxLife:.3+Math.random()*.4,
+        gold:true,spark:false
+      });
+    }
+  }
+
+  // Edge shimmer sparkles
+  function spawnShimmer(edgeX,intensity){
+    if(Math.random()>.3)return;
+    const n=2;
+    for(let i=0;i<n;i++){
+      particles.push({
+        x:edgeX+(Math.random()-.5)*8,
+        y:Math.random()*H,
+        vx:(Math.random()-.5)*.5,
+        vy:(Math.random()-.5)*.5,
+        r:Math.random()*1+.5,
+        life:.15+Math.random()*.2,
+        maxLife:.15+Math.random()*.2,
+        gold:true,spark:true
+      });
+    }
+  }
+
+  // === EDGE GLOW — DRAMATIC ===
   function drawGlow(prog){
-    // prog: 0=story, 1=essence
-    const intensity=1-Math.abs(prog*2-1); // peaks at 0.5
-    if(intensity<.02)return;
-
-    const edgeX=W*(1-prog); // where the page edge is
+    const intensity=1-Math.abs(prog*2-1);
+    if(intensity<.01)return;
     const isDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+    const edgeX=W*(1-prog);
+    const gw=180; // wide glow
 
-    // Vertical glow line at page edge
-    const g1=ctx.createLinearGradient(edgeX-60,0,edgeX+60,0);
+    // Outer glow — warm wash
+    const g1=ctx.createLinearGradient(edgeX-gw,0,edgeX+gw,0);
     if(isDark){
       g1.addColorStop(0,'rgba(201,169,110,0)');
-      g1.addColorStop(.35,'rgba(201,169,110,'+(intensity*.15)+')');
-      g1.addColorStop(.5,'rgba(232,213,176,'+(intensity*.35)+')');
-      g1.addColorStop(.65,'rgba(201,169,110,'+(intensity*.15)+')');
+      g1.addColorStop(.3,'rgba(201,169,110,'+(intensity*.2)+')');
+      g1.addColorStop(.5,'rgba(255,220,150,'+(intensity*.5)+')');
+      g1.addColorStop(.7,'rgba(201,169,110,'+(intensity*.2)+')');
       g1.addColorStop(1,'rgba(201,169,110,0)');
     } else {
       g1.addColorStop(0,'rgba(139,111,71,0)');
-      g1.addColorStop(.35,'rgba(139,111,71,'+(intensity*.08)+')');
-      g1.addColorStop(.5,'rgba(201,169,110,'+(intensity*.2)+')');
-      g1.addColorStop(.65,'rgba(139,111,71,'+(intensity*.08)+')');
+      g1.addColorStop(.3,'rgba(139,111,71,'+(intensity*.12)+')');
+      g1.addColorStop(.5,'rgba(201,169,110,'+(intensity*.35)+')');
+      g1.addColorStop(.7,'rgba(139,111,71,'+(intensity*.12)+')');
       g1.addColorStop(1,'rgba(139,111,71,0)');
     }
     ctx.fillStyle=g1;
-    ctx.fillRect(edgeX-60,0,120,H);
+    ctx.fillRect(edgeX-gw,0,gw*2,H);
 
-    // Bright center line
-    const g2=ctx.createLinearGradient(edgeX-2,0,edgeX+2,0);
-    const lineAlpha=intensity*.4;
+    // Inner bright line
+    const g2=ctx.createLinearGradient(edgeX-4,0,edgeX+4,0);
+    const la=intensity*.7;
     if(isDark){
-      g2.addColorStop(0,'rgba(232,213,176,0)');
-      g2.addColorStop(.5,'rgba(232,213,176,'+lineAlpha+')');
-      g2.addColorStop(1,'rgba(232,213,176,0)');
+      g2.addColorStop(0,'rgba(255,230,170,0)');
+      g2.addColorStop(.3,'rgba(255,230,170,'+(la*.5)+')');
+      g2.addColorStop(.5,'rgba(255,240,200,'+la+')');
+      g2.addColorStop(.7,'rgba(255,230,170,'+(la*.5)+')');
+      g2.addColorStop(1,'rgba(255,230,170,0)');
     } else {
       g2.addColorStop(0,'rgba(201,169,110,0)');
-      g2.addColorStop(.5,'rgba(201,169,110,'+lineAlpha+')');
+      g2.addColorStop(.3,'rgba(201,169,110,'+(la*.4)+')');
+      g2.addColorStop(.5,'rgba(220,190,130,'+la+')');
+      g2.addColorStop(.7,'rgba(201,169,110,'+(la*.4)+')');
       g2.addColorStop(1,'rgba(201,169,110,0)');
     }
     ctx.fillStyle=g2;
-    ctx.fillRect(edgeX-2,0,4,H);
+    ctx.fillRect(edgeX-4,0,8,H);
 
-    // Top and bottom fade for the glow (so it doesn't just cut off)
-    const vFade=ctx.createLinearGradient(0,0,0,H);
-    vFade.addColorStop(0,'rgba(0,0,0,0)');
-    vFade.addColorStop(.12,'rgba(0,0,0,1)');
-    vFade.addColorStop(.88,'rgba(0,0,0,1)');
-    vFade.addColorStop(1,'rgba(0,0,0,0)');
+    // Screen-edge fade (top/bottom)
+    const vf=ctx.createLinearGradient(0,0,0,H);
+    vf.addColorStop(0,'rgba(0,0,0,0)');
+    vf.addColorStop(.08,'rgba(0,0,0,1)');
+    vf.addColorStop(.92,'rgba(0,0,0,1)');
+    vf.addColorStop(1,'rgba(0,0,0,0)');
     ctx.globalCompositeOperation='destination-in';
-    ctx.fillStyle=vFade;
+    ctx.fillStyle=vf;
     ctx.fillRect(0,0,W,H);
     ctx.globalCompositeOperation='source-over';
   }
 
-  // Draw and update particles
+  // === PARTICLES RENDERER ===
   function drawParticles(dt){
     const isDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
     particles=particles.filter(p=>{
       p.life-=dt;
       if(p.life<=0)return false;
       p.x+=p.vx;p.y+=p.vy;
-      p.vx*=.97;p.vy*=.97;
-      const a=(p.life/p.maxLife);
-      const alpha=a*a; // ease out
-      if(p.gold){
+      p.vx*=.96;p.vy*=.96;
+      const a=p.life/p.maxLife;
+      const alpha=a*a;
+
+      if(p.spark){
+        // Bright white-gold spark
+        const sa=alpha*1.2;
         ctx.fillStyle=isDark
-          ?'rgba(232,213,176,'+(alpha*.7)+')'
-          :'rgba(201,169,110,'+(alpha*.5)+')';
+          ?'rgba(255,245,220,'+Math.min(sa,1)+')'
+          :'rgba(220,190,120,'+Math.min(sa,.8)+')';
         ctx.shadowColor=isDark
-          ?'rgba(201,169,110,'+(alpha*.5)+')'
-          :'rgba(139,111,71,'+(alpha*.3)+')';
-        ctx.shadowBlur=p.r*5;
+          ?'rgba(255,220,150,'+(sa*.8)+')'
+          :'rgba(201,169,110,'+(sa*.6)+')';
+        ctx.shadowBlur=p.r*8;
+      } else if(p.gold){
+        ctx.fillStyle=isDark
+          ?'rgba(232,213,176,'+(alpha*.8)+')'
+          :'rgba(201,169,110,'+(alpha*.6)+')';
+        ctx.shadowColor=isDark
+          ?'rgba(201,169,110,'+(alpha*.6)+')'
+          :'rgba(139,111,71,'+(alpha*.4)+')';
+        ctx.shadowBlur=p.r*6;
       } else {
         ctx.fillStyle=isDark
-          ?'rgba(255,255,255,'+(alpha*.3)+')'
-          :'rgba(139,111,71,'+(alpha*.25)+')';
+          ?'rgba(255,255,255,'+(alpha*.35)+')'
+          :'rgba(139,111,71,'+(alpha*.3)+')';
         ctx.shadowBlur=0;
       }
       ctx.beginPath();
-      ctx.arc(p.x,p.y,p.r*a,0,Math.PI*2);
+      ctx.arc(p.x,p.y,p.r*(a*.5+.5),0,Math.PI*2);
       ctx.fill();
       ctx.shadowBlur=0;
       return true;
     });
   }
 
-  let lastTime=0,isScrolling=false,scrollTimer=null;
+  // === MAIN LOOP ===
+  let lastTime=0,scrollTimer=null,trailTimer=0;
 
   function animate(t){
     const dt=lastTime?Math.min((t-lastTime)/1000,.05):0.016;
@@ -1255,35 +1307,51 @@ updLang();updCollUI();render();
     ctx.clearRect(0,0,W,H);
 
     const rs=$('rScroll');
-    if(!rs||!rs.scrollWidth)return;
-    const prog=rs.scrollLeft/(rs.scrollWidth-rs.offsetWidth||1);
+    if(!rs||!rs.scrollWidth){animId=null;return}
+    const maxScroll=rs.scrollWidth-rs.offsetWidth;
+    if(maxScroll<=0){animId=null;return}
+    const prog=rs.scrollLeft/maxScroll;
+    const velocity=lastProg>=0?(prog-lastProg)/dt:0;
 
-    // Draw glow at page edge during scroll
+    // Edge glow
     drawGlow(prog);
 
-    // Spawn burst particles at crossing point
+    // Burst at midpoint crossing — BOTH directions
     const mid=.5;
     if(lastProg>=0){
-      const crossed=(lastProg<mid&&prog>=mid)||(lastProg>mid&&prog<=mid);
-      if(crossed&&!burstDone){
-        const dir=prog>lastProg?1:-1;
-        spawnBurst(W*.5,dir);
-        burstDone=true;
-      }
-      if(Math.abs(prog-mid)>.15)burstDone=false;
+      const crossedForward=lastProg<mid&&prog>=mid;
+      const crossedBack=lastProg>mid&&prog<=mid;
+      if(crossedForward){spawnBurst(W*.5,1)}
+      if(crossedBack){spawnBurst(W*.5,-1)}
     }
-    lastProg=prog;
 
+    // Continuous trailing particles during scroll
+    const edgeX=W*(1-prog);
+    const absVel=Math.abs(velocity);
+    trailTimer+=dt;
+    if(absVel>.3&&trailTimer>.03){
+      spawnTrail(edgeX,velocity>0?-1:1);
+      trailTimer=0;
+    }
+
+    // Edge shimmer when near middle
+    const midDist=Math.abs(prog-.5);
+    if(midDist<.3){
+      spawnShimmer(edgeX,1-midDist/.3);
+    }
+
+    lastProg=prog;
     drawParticles(dt);
 
-    // Show/hide canvas
-    const moving=Math.abs(prog*2-1)<.92;
+    // Keep running while moving or particles alive
+    const moving=Math.abs(prog*2-1)<.95;
     if(moving||particles.length>0){
       canvas.classList.add('active');
       animId=requestAnimationFrame(animate);
     } else {
       canvas.classList.remove('active');
       animId=null;
+      lastProg=-1;
     }
   }
 
@@ -1291,15 +1359,10 @@ updLang();updCollUI();render();
     if(!animId){lastTime=0;animId=requestAnimationFrame(animate)}
   }
 
-  // Hook into rScroll
   const rs=$('rScroll');
   if(rs){
     rs.addEventListener('scroll',()=>{
       startAnim();
-      clearTimeout(scrollTimer);
-      scrollTimer=setTimeout(()=>{
-        // Final settle — let animation finish naturally
-      },200);
     },{passive:true});
   }
 })();
