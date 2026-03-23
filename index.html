@@ -45,32 +45,32 @@ input{font-family:inherit}
 
 /* ═══ NAV ═══ */
 .nav{position:sticky;top:0;z-index:100;
-  padding:calc(var(--st) + 8px) 20px 0;
+  padding:calc(var(--st) + 10px) 20px 0;
   background:color-mix(in srgb,var(--bg) 88%,transparent);
   backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px)}
 .nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:.33px;background:var(--b2)}
-.nav-top{max-width:600px;margin:0 auto;display:flex;align-items:center;gap:10px;padding-bottom:8px}
-.nav-enso{width:26px;height:26px;opacity:.7;flex-shrink:0}
-.nav-title{font-family:var(--serif);font-size:22px;font-weight:700;flex:1;
-  letter-spacing:.5px;line-height:1;
-  background:linear-gradient(135deg,var(--gold2) 0%,var(--gold1) 50%,var(--gold3) 100%);
+.nav-brand{text-align:center;padding-bottom:10px}
+.nav-enso{width:28px;height:28px;opacity:.6;vertical-align:middle;margin-bottom:4px}
+.nav-title{font-family:var(--serif);font-size:28px;font-weight:700;
+  letter-spacing:1px;line-height:1;display:block;margin-top:2px;
+  background:linear-gradient(135deg,var(--gold3) 0%,var(--gold2) 30%,var(--gold1) 60%,var(--gold2) 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.nav-right{display:flex;gap:4px;align-items:center}
+.nav-bar{max-width:600px;margin:0 auto;display:flex;align-items:center}
+.nav-tabs{display:flex;flex:1}
+.nav-tab{flex:1;padding:8px 0 10px;font-size:13px;font-weight:600;
+  text-align:center;color:var(--fg3);border:none;background:none;
+  position:relative;transition:color .25s}
+.nav-tab.active{color:var(--fg)}
+.nav-tab::after{content:'';position:absolute;bottom:0;left:20%;right:20%;
+  height:2px;border-radius:1px;background:transparent;transition:background .25s}
+.nav-tab.active::after{background:linear-gradient(90deg,var(--gold2),var(--gold1),var(--gold2))}
+.nav-tab-n{font-size:11px;color:var(--fg3);margin-left:3px;font-weight:400}
+.nav-tab.active .nav-tab-n{color:var(--accent2)}
+.nav-right{display:flex;gap:2px;flex-shrink:0}
 .nav-act{font-size:12px;font-weight:600;color:var(--fg2);background:none;
-  border:none;padding:5px 8px;border-radius:6px;letter-spacing:.3px}
+  border:none;padding:6px 8px;border-radius:6px}
 .nav-act:active{background:var(--accent-s)}
 .nav-dice{font-size:16px;padding:4px 6px}
-.nav-tabs{max-width:600px;margin:0 auto;display:flex;gap:0;
-  border-bottom:none;padding:0}
-.nav-tab{flex:1;padding:8px 0 10px;font-size:13px;font-weight:600;
-  text-align:center;color:var(--fg2);border:none;background:none;
-  position:relative;transition:color .2s}
-.nav-tab.active{color:var(--fg)}
-.nav-tab.active::after{content:'';position:absolute;bottom:0;left:20%;right:20%;
-  height:2px;border-radius:1px;
-  background:linear-gradient(90deg,var(--gold2),var(--gold1))}
-.nav-tab-n{font-size:11px;color:var(--fg3);margin-left:4px;font-weight:500}
-.nav-tab.active .nav-tab-n{color:var(--accent)}
 /* ═══ SEARCH ═══ */
 .srch{max-width:600px;margin:8px auto 0;padding:0 16px;position:relative}
 .srch-i{position:absolute;left:38px;top:50%;transform:translateY(-50%);
@@ -117,10 +117,11 @@ input{font-family:inherit}
 .card-h{font-family:var(--serif);font-size:16px;font-weight:600;line-height:1.3}
 .card-h2{font-size:13px;color:var(--fg2);margin-top:1px;font-style:italic;line-height:1.3;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.card-row{display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap}
+.card-row{display:flex;align-items:center;gap:5px;margin-top:5px;overflow:hidden;max-height:22px}
 .card-min{font-size:11px;color:var(--fg3)}
 .card-tg{font-size:10px;color:var(--accent);background:var(--accent-s);
-  padding:2px 7px;border-radius:6px;font-weight:500;letter-spacing:.2px}
+  padding:2px 7px;border-radius:5px;font-weight:500;letter-spacing:.2px;
+  white-space:nowrap;flex-shrink:0}
 .card-date{font-size:10px;color:var(--green);font-weight:500}
 .card-end{display:flex;align-items:center;padding:0 14px;flex-shrink:0}
 .card-chev{color:var(--fg3);font-size:13px;font-weight:300}
@@ -134,13 +135,13 @@ input{font-family:inherit}
 
 /* ═══ READER ═══ */
 .reader{position:fixed;inset:0;z-index:200;background:var(--bg);
-  transform:translateY(100%);transition:transform .4s cubic-bezier(.32,.72,0,1);
+  transform:translateY(100%);transition:transform .45s cubic-bezier(.22,1,.36,1);
   overflow:hidden}
 .reader.open{transform:translateY(0)}
 .r-scroll{display:flex;width:100%;height:100%;
   overflow-x:scroll;overflow-y:hidden;
   scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
-  scrollbar-width:none}
+  scrollbar-width:none;scroll-behavior:smooth}
 .r-scroll::-webkit-scrollbar{display:none}
 .r-page{min-width:100%;width:100%;height:100%;overflow-y:auto;
   -webkit-overflow-scrolling:touch;
@@ -149,9 +150,12 @@ input{font-family:inherit}
 
 /* ═══ ESSENCE PAGE ═══ */
 .r-page-ess{position:relative;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
-  background:color-mix(in srgb,var(--bg) 94%,var(--accent) 6%)}
+  background:linear-gradient(165deg,#f5f0e8 0%,#ede5d8 50%,#e8e0d2 100%)}
 @media(prefers-color-scheme:dark){
-  .r-page-ess{background:linear-gradient(180deg,#1a1820 0%,#1e1a24 100%)}}
+  .r-page-ess{background:linear-gradient(165deg,#1a1628 0%,#1e1a2e 40%,#1a2030 100%)}}
+.ess-enso{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:260px;height:260px;color:var(--accent2);opacity:.06;pointer-events:none}
+@media(prefers-color-scheme:dark){.ess-enso{opacity:.05}}
 
 .ess-wrap{max-width:600px;margin:0 auto;padding:calc(var(--st) + 60px) 32px calc(80px + var(--sb));
   min-height:100%;display:flex;flex-direction:column;justify-content:center;position:relative}
@@ -290,20 +294,22 @@ input{font-family:inherit}
 </svg>
 
 <nav class="nav">
-  <div class="nav-top">
+  <div class="nav-brand">
     <svg viewBox="0 0 100 100" fill="none" class="nav-enso">
       <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#E8D5B0"/><stop offset="100%" stop-color="#8B6F47"/></linearGradient></defs>
-      <path d="M50 15C30.7 15 15 30.7 15 50s15.7 35 35 35 35-15.7 35-35" stroke="url(#lg)" stroke-width="6" stroke-linecap="round"/>
+      <path d="M50 15C30.7 15 15 30.7 15 50s15.7 35 35 35 35-15.7 35-35" stroke="url(#lg)" stroke-width="5.5" stroke-linecap="round"/>
     </svg>
     <h1 class="nav-title">JiGyo</h1>
+  </div>
+  <div class="nav-bar">
+    <div class="nav-tabs" id="collTabs">
+      <button class="nav-tab active" data-c="stories">Verhalen<span class="nav-tab-n">101</span></button>
+      <button class="nav-tab" data-c="koans">Koans<span class="nav-tab-n">48</span></button>
+    </div>
     <div class="nav-right">
       <button class="nav-act" id="navLangBtn">NL</button>
       <button class="nav-act nav-dice" id="shuffleBtn">🎲</button>
     </div>
-  </div>
-  <div class="nav-tabs" id="collTabs">
-    <button class="nav-tab active" data-c="stories">Verhalen<span class="nav-tab-n">101</span></button>
-    <button class="nav-tab" data-c="koans">Koans<span class="nav-tab-n">48</span></button>
   </div>
 </nav>
 
@@ -348,6 +354,10 @@ input{font-family:inherit}
       <div class="r-body" id="rBody"></div>
     </div>
     <div class="r-page r-page-ess" id="rPage2">
+      <svg class="ess-enso" viewBox="0 0 280 280" fill="none">
+        <path d="M 185 62 A 100 100 0 1 1 82 75" stroke="currentColor" stroke-width="24"
+          stroke-linecap="round" fill="none"/>
+      </svg>
       <div class="ess-wrap">
         <div class="ess-label">Essentie</div>
         <div class="ess-text" id="essText"></div>
