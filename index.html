@@ -158,22 +158,7 @@ input{font-family:inherit}
 
 
 
-/* ═══ INK WASH CLOSE ═══ */
-.ink-wash{position:fixed;inset:0;z-index:250;pointer-events:none;
-  opacity:0;transition:opacity .3s ease}
-.ink-wash.active{opacity:1}
-.ink-wash::before,.ink-wash::after{content:'';position:absolute;inset:0}
-.ink-wash::before{
-  background:linear-gradient(105deg,transparent 0%,var(--fg) 35%,var(--fg) 65%,transparent 100%);
-  transform:translateX(110%);transition:none}
-.ink-wash.sweep::before{
-  transform:translateX(-110%);
-  transition:transform .55s cubic-bezier(.4,0,.2,1)}
-.ink-wash::after{
-  background:radial-gradient(ellipse at 50% 50%,
-    rgba(201,169,110,.15) 0%,transparent 70%);
-  opacity:0;transition:opacity .4s ease .2s}
-.ink-wash.sweep::after{opacity:1}
+/* ═══ WATER DISSOLVE CLOSE ═══ */
 /* ═══ SWIPE TRANSITION FX ═══ */
 .swipe-fx{position:fixed;inset:0;z-index:50;pointer-events:none;opacity:0;
   transition:opacity .15s ease}
@@ -183,9 +168,12 @@ input{font-family:inherit}
   transform:translateY(100%);transition:transform .45s cubic-bezier(.22,1,.36,1);
   overflow:hidden}
 .reader.open{transform:translateY(0)}
-.reader.closing{transform:scale(.92);opacity:0;
-  transition:transform .4s cubic-bezier(.4,0,1,1),opacity .35s ease .05s;
-  filter:blur(6px)}
+.reader.dissolve{
+  filter:blur(20px) saturate(.3);opacity:0;
+  transform:translateY(0) scale(.97);
+  transition:filter .5s cubic-bezier(.4,0,.2,1),
+    opacity .45s cubic-bezier(.4,0,1,1) .05s,
+    transform .5s cubic-bezier(.4,0,.2,1)}
 .r-scroll{display:flex;width:100%;height:100%;
   overflow-x:scroll;overflow-y:hidden;
   scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
@@ -444,7 +432,6 @@ input{font-family:inherit}
   </div>
 </div>
 
-<div class="ink-wash" id="inkWash"></div>
 <div class="sumi-overlay" id="sumiOverlay">
   <div class="sumi-bg"></div>
   <canvas class="sparkle-canvas" id="sparkleCanvas"></canvas>
@@ -1124,46 +1111,24 @@ function burstEnlightenment(){
 }
 
 
-// ═══ INK WASH CLOSE ═══
-function inkWashClose(){
-  const wash=$('inkWash');
+// ═══ WATER DISSOLVE CLOSE ═══
+function waterDissolveClose(){
   const reader=$('reader');
-  if(!wash||!reader)return;
-
-  // Phase 1: Reader shrinks + blurs (content feels like it's being absorbed)
-  reader.classList.add('closing');
-
-  // Phase 2: Ink brush sweeps across (starts slightly after shrink begins)
+  if(!reader)return;
+  // Text blurs from 0→20px, desaturates, fades — like sinking into water
+  reader.classList.add('dissolve');
+  // After dissolve completes, snap close and clean up
   setTimeout(()=>{
-    wash.classList.add('active');
-    // Force reflow before adding sweep
-    wash.offsetHeight;
-    wash.classList.add('sweep');
-  },100);
-
-  // Phase 3: Close reader while ink is covering the screen
-  setTimeout(()=>{
-    reader.classList.remove('closing');
+    reader.classList.remove('dissolve','open');
     reader.style.transition='none';
     reader.style.transform='';
+    reader.style.filter='';
+    reader.style.opacity='';
     closeReader();
-    // Restore transition for next open
     requestAnimationFrame(()=>{
       reader.style.transition='';
     });
-  },350);
-
-  // Phase 4: Ink wash fades out, revealing the list
-  setTimeout(()=>{
-    wash.classList.remove('sweep');
-    wash.classList.remove('active');
-    // Reset pseudo-element position after transition ends
-    setTimeout(()=>{
-      wash.style.display='none';
-      wash.offsetHeight;
-      wash.style.display='';
-    },400);
-  },600);
+  },520);
 }
 function randomStory(){
   const all=src(),unrd=all.filter(s=>!rdSet.has(s.n));
@@ -1257,7 +1222,7 @@ $('rPage1').addEventListener('touchstart',e=>{
 $('rPage1').addEventListener('touchend',e=>{
   const dx=e.changedTouches[0].clientX-tx;
   const dy=Math.abs(e.changedTouches[0].clientY-ty);
-  if(dx>80&&dy<80) inkWashClose();
+  if(dx>80&&dy<80) waterDissolveClose();
 },{passive:true});
 
 // (old close glow removed — replaced by wind scatter)
